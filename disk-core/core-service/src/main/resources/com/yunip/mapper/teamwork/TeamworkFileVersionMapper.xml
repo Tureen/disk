@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.teamwork.ITeamworkFileVersionDao" >
+  <resultMap id="BaseResultMap" type="TTeamworkFileVersion" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="file_id" property="fileId" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="TINYINT" />
+    <result column="file_size" property="fileSize" jdbcType="BIGINT" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="file_version" property="fileVersion" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="teamwork_id" property="teamworkId" jdbcType="INTEGER" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="encrypt_status" property="encryptStatus" jdbcType="TINYINT" />
+    <result column="encrypt_key" property="encryptKey" jdbcType="VARCHAR" />
+    <result column="server_code" property="serverCode" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, file_id, file_name, file_type, file_size, file_path, file_version, employee_id, 
+    teamwork_id, folder_code, valid_status, create_admin, create_time, update_admin, 
+    update_time, encrypt_status, encrypt_key, server_code
+  </sql>
+  
+  <!-- 查询单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_file_version
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 获取总共所有使用的文件大小 -->
+  <select id="selectSumUseSpace" parameterType="java.lang.Integer" resultType="java.lang.Long">
+     select sum(file_size) from yun_tw_file_version where teamwork_id in (select id from yun_tw_teamwork where employee_id = #{employeeId,jdbcType=INTEGER})
+  </select>
+  
+  <!-- 获取历史文件路径, 根据协作id集 -->
+  <select id="selectPathByTeamworkIds" parameterType="TTeamworkFileVersion" resultType="java.lang.String">
+  	select t.file_path
+  	from yun_tw_file_version t 
+  	where teamwork_id in
+  	<foreach collection="ids" item="teamworkid" separator="," open="(" close=")">
+    	#{teamworkid}
+    </foreach >
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_tw_file_version
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除多条，根据关联的协作文件id -->
+  <delete id="delByFileId" parameterType="java.lang.Integer">
+  	delete from yun_tw_file_version
+  	where file_id = #{fileId}
+  </delete>
+  
+  <!-- 删除,根据文件夹code -->
+  <delete id="delByCode" parameterType="TTeamworkFileVersion">
+  	delete from yun_tw_file_version
+  	where teamwork_id = #{teamworkId} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 删除多条，根据协作id -->
+  <delete id="delByTeamworkIds" parameterType="TTeamworkFileVersion">
+  	delete from yun_tw_file_version
+  	where teamwork_id in
+  	<foreach collection="ids" item="teamworkid" separator="," open="(" close=")">
+    	#{teamworkid}
+    </foreach>
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TTeamworkFileVersion" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_tw_file_version (id, file_id, file_name, 
+      file_type, file_size, file_path, 
+      file_version, employee_id, teamwork_id, 
+      folder_code, valid_status, create_admin, 
+      create_time, update_admin, update_time, 
+      encrypt_status, encrypt_key, server_code
+      )
+    values (#{id,jdbcType=INTEGER}, #{fileId,jdbcType=INTEGER}, #{fileName,jdbcType=VARCHAR}, 
+      #{fileType,jdbcType=TINYINT}, #{fileSize,jdbcType=BIGINT}, #{filePath,jdbcType=VARCHAR}, 
+      #{fileVersion,jdbcType=INTEGER}, #{employeeId,jdbcType=INTEGER}, #{teamworkId,jdbcType=INTEGER}, 
+      #{folderCode,jdbcType=VARCHAR}, #{validStatus,jdbcType=TINYINT}, #{createAdmin,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateAdmin,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{encryptStatus,jdbcType=TINYINT}, #{encryptKey,jdbcType=VARCHAR}, #{serverCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TTeamworkFileVersion" >
+    update yun_tw_file_version
+    <set >
+      <if test="fileId != null" >
+        file_id = #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null" >
+        file_type = #{fileType,jdbcType=TINYINT},
+      </if>
+      <if test="fileSize != null" >
+        file_size = #{fileSize,jdbcType=BIGINT},
+      </if>
+      <if test="filePath != null" >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="fileVersion != null" >
+        file_version = #{fileVersion,jdbcType=INTEGER},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="teamworkId != null" >
+        teamwork_id = #{teamworkId,jdbcType=INTEGER},
+      </if>
+      <if test="folderCode != null" >
+        folder_code = #{folderCode,jdbcType=VARCHAR},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="encryptStatus != null" >
+        encrypt_status = #{encryptStatus,jdbcType=TINYINT},
+      </if>
+      <if test="encryptKey != null" >
+        encrypt_key = #{encryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="serverCode != null" >
+        server_code = #{serverCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+	  <if test="fileId != null and fileId > 0" >
+        AND file_id = #{fileId}
+      </if>
+	  <if test="teamworkId != null and teamworkId > 0" >
+        AND teamwork_id = #{teamworkId}
+      </if>
+      <if test="fileVersion != null and fileVersion > 0" >
+        AND file_version = #{fileVersion}
+      </if>
+      <if test="filePath != null and filePath !=''" >
+        AND file_path = #{filePath}
+      </if>
+   </sql>
+  
+  <!-- 根据条件查询列表 -->
+  <select id="selectByQuery" parameterType="TTeamworkFileVersionQuery" resultMap="BaseResultMap">
+    select 
+    	<include refid="Base_Column_List" />
+    from yun_tw_file_version where  1 = 1
+    	<include refid="Page_Query_Condition" />
+    order by file_version 
+    <if test="desc == true">
+      desc
+    </if>
+  </select>
+  
+  <!-- 根据条件查询记录数 -->
+  <select id="selectCountByQuery" parameterType="TTeamworkFileVersionQuery" resultType="java.lang.Integer">
+   select count(1) from yun_tw_file_version where  1 = 1
+    <include refid="Page_Query_Condition" />
+  </select>
+</mapper>

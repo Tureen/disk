@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.log.IAdminLogDao" >
+  <resultMap id="BaseResultMap" type="TAdminLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="action_type" property="actionType" jdbcType="INTEGER" />
+    <result column="oper_content" property="operContent" jdbcType="VARCHAR" />
+    <result column="oper_admin" property="operAdmin" jdbcType="VARCHAR" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <result column="oper_ip" property="operIp" jdbcType="VARCHAR" />
+    <result column="oper_time" property="operTime" jdbcType="TIMESTAMP" />
+    <result column="is_admin" property="isAdmin" jdbcType="TINYINT" />
+  </resultMap>
+
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, action_type, oper_content, oper_admin, admin_id, oper_ip, oper_time, is_admin
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_admin_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_sys_admin_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 清空管理员日志or员工日志 -->
+  <delete id="delByIsAdmin" parameterType="java.lang.Integer" >
+    delete from yun_sys_admin_log
+    where is_admin = #{isAdmin,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TAdminLog" useGeneratedKeys="true"  keyProperty="id" >
+    insert into yun_sys_admin_log (id, action_type, oper_content, 
+      oper_admin, admin_id, oper_ip, 
+      oper_time, is_admin)
+    values (#{id,jdbcType=INTEGER}, #{actionType,jdbcType=INTEGER}, #{operContent,jdbcType=VARCHAR}, 
+      #{operAdmin,jdbcType=VARCHAR}, #{adminId,jdbcType=INTEGER}, #{operIp,jdbcType=VARCHAR}, 
+      #{operTime,jdbcType=TIMESTAMP}, #{isAdmin,jdbcType=TINYINT})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TAdminLog" >
+    update yun_sys_admin_log
+    <set >
+      <if test="actionType != null" >
+        action_type = #{actionType,jdbcType=INTEGER},
+      </if>
+      <if test="operContent != null" >
+        oper_content = #{operContent,jdbcType=VARCHAR},
+      </if>
+      <if test="operAdmin != null" >
+        oper_admin = #{operAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="adminId != null" >
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="operIp != null" >
+        oper_ip = #{operIp,jdbcType=VARCHAR},
+      </if>
+      <if test="operTime != null" >
+        oper_time = #{operTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isAdmin != null" >
+        is_admin = #{isAdmin,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+	  <if test="actionType != null" >
+        AND action_type = #{actionType,jdbcType=INTEGER}
+      </if>
+      <if test="adminId != null" >
+        AND admin_id = #{adminId,jdbcType=INTEGER}
+      </if>
+      <if test="operAdmin != null and operAdmin != ''" >
+        AND oper_admin = #{operAdmin,jdbcType=VARCHAR}
+      </if>
+      <if test="isAdmin != null" >
+        AND is_admin = #{isAdmin,jdbcType=INTEGER}
+      </if>
+      <if test="startDate != null and startDate != ''" >
+         <![CDATA[AND t.oper_time >= #{startDate,jdbcType=VARCHAR}]]>
+      </if>
+       <if test="endDate != null and endDate != ''" >
+         <![CDATA[AND t.oper_time <= #{endDate,jdbcType=VARCHAR}]]>
+      </if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TAdminLogQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_admin_log t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.oper_time desc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TAdminLogQuery" resultType="java.lang.Integer">
+	select count(1) from yun_sys_admin_log t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.user.IAdminPermissionDao" >
+  <resultMap id="BaseResultMap" type="TAdminPermission" >
+    <id column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <id column="permission_id" property="permissionId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    admin_id, permission_id
+  </sql>
+  
+  <!-- 根据adminId删除列-->
+  <delete id="delByAdminId" parameterType="java.lang.Integer" >
+    delete from yun_sys_admin_permission
+    where admin_id = #{adminId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TAdminPermission" >
+    insert into yun_sys_admin_permission (admin_id, permission_id)
+    values (#{adminId,jdbcType=INTEGER}, #{permissionId,jdbcType=INTEGER})
+  </insert>
+  
+  <!-- 根据adminId查询列 -->
+  <select id="selectByAdminId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_admin_permission
+    where admin_id = #{adminId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据roleId查询列 -->
+  <select id="selectByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_admin_permission
+    where permission_id = #{permissionId,jdbcType=INTEGER}
+  </select>
+  
+</mapper>

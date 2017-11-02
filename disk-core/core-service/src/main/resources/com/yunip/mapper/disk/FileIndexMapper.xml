@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IFileIndexDao" >
+  <resultMap id="BaseResultMap" type="TFileIndex" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="file_id" property="fileId" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="oper_type" property="operType" jdbcType="TINYINT" />
+  </resultMap>
+	
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, file_id,file_name, file_type, employee_id, file_path, oper_type
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_file_index
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_file_index
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 新增单条 -->
+  <insert id="insert" parameterType="TFileIndex" >
+    insert into yun_dk_file_index (id,file_id, file_name, file_type, 
+      employee_id, file_path, oper_type
+      )
+    values (#{id,jdbcType=INTEGER}, #{fileId}, #{fileName,jdbcType=VARCHAR}, #{fileType,jdbcType=INTEGER}, 
+      #{employeeId,jdbcType=INTEGER}, #{filePath,jdbcType=VARCHAR}, #{operType,jdbcType=TINYINT}
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TFileIndex" >
+    update yun_dk_file_index
+    <set >
+      <if test="fileId != null" >
+        file_id = #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null" >
+        file_type = #{fileType,jdbcType=INTEGER},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="filePath != null" >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="operType != null" >
+        oper_type = #{operType,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询全部 -->
+  <select id="selectByAll" resultMap="BaseResultMap" >
+  	select 
+    <include refid="Base_Column_List" />
+    from yun_dk_file_index
+    order by id asc
+  </select>
+  
+  <!-- 修改 -->
+  <update id="updateFilePathByFileId" parameterType="TFileIndex" >
+    update yun_dk_file_index
+    <set>
+      <if test="filePath != null" >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </update>
+</mapper>

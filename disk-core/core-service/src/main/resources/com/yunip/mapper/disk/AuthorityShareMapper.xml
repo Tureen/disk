@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IAuthorityShareDao" >
+  <resultMap id="BaseResultMap" type="TAuthorityShare" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="INTEGER" />
+    <result column="open_type" property="openType" jdbcType="TINYINT" />
+    <result column="oper_auth" property="operAuth" jdbcType="TINYINT" />
+    <result column="share_id" property="shareId" jdbcType="VARCHAR" />
+    <result column="share_type" property="shareType" jdbcType="TINYINT" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="folder_id" property="folderId" jdbcType="INTEGER" />
+    <result column="share_employee_name" property="shareEmployeeName" jdbcType="VARCHAR" />
+    <result column="share_dept_name" property="shareDeptName" jdbcType="VARCHAR" />
+    <result column="workgroup_name" property="workgroupName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 分享结果 -->
+  <resultMap id="ShareResultMap" type="TAuthorityShare" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="open_id" property="openId" jdbcType="INTEGER" />
+    <result column="open_type" property="openType" jdbcType="TINYINT" />
+    <result column="oper_auth" property="operAuth" jdbcType="TINYINT" />
+    <result column="share_id" property="shareId" jdbcType="VARCHAR" />
+    <result column="share_type" property="shareType" jdbcType="TINYINT" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="folder_id" property="folderId" jdbcType="INTEGER" />
+    <association column="foid" property="folder" select="selectFolder" />
+    <association column="fiid" property="file" select="selectFile"/>
+  </resultMap>
+  
+  <!-- folder对象属性（select用） -->
+  <resultMap id="FolderMap" type="TFolder" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="folder_name" property="folderName" jdbcType="VARCHAR" />
+    <result column="folder_type" property="folderType" jdbcType="TINYINT" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="share_status" property="shareStatus" jdbcType="TINYINT" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="oper_auth" property="operAuth" jdbcType="TINYINT" />
+    <result column="open_id" property="openId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- file对象属性（select用） -->
+  <resultMap id="FileMap" type="TFile" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="TINYINT" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="file_size" property="fileSize" jdbcType="INTEGER" />
+    <result column="folder_id" property="folderId" jdbcType="INTEGER" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="file_version" property="fileVersion" jdbcType="INTEGER" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="share_status" property="shareStatus" jdbcType="TINYINT" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="oper_auth" property="operAuth" jdbcType="TINYINT" />
+    <result column="file_version_num" property="fileVersionNum" jdbcType="INTEGER" />
+    <result column="server_code" property="serverCode" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, open_id, open_type, oper_auth, share_id, share_type, employee_id, folder_id
+  </sql>
+  
+  <!-- 公共数据列 -->
+  <sql id="TBase_Column_List" >
+    t.id, t.open_id, t.open_type, t.oper_auth, t.share_id, t.share_type, t.employee_id, t.folder_id
+  </sql>
+  
+  <!-- 文件夹数据列 -->
+  <sql id="Folder_Column_List" >
+    t.id, t.open_id, t.open_type, t.oper_auth, t.share_id, t.share_type, t.employee_id, t.folder_id,
+	fo.id as foid, null as fiid
+  </sql>
+  
+  <!-- 文件数据列 -->
+  <sql id="File_Column_List" >
+    t.id, t.open_id, t.open_type, t.oper_auth, t.share_id, t.share_type, t.employee_id, t.folder_id,
+	null as foid, fi.id as fiid
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_authority_share
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_authority_share
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除单条 -->
+  <delete id="delByKeyId" parameterType="TAuthorityShare" >
+    delete from yun_dk_authority_share
+    where open_id = #{openId,jdbcType=INTEGER} and open_type = #{openType}
+    <if test="operAuth != null">
+    and oper_auth = #{operAuth,jdbcType=TINYINT}
+    </if>
+  </delete>
+  
+  <!-- 删除,根据shareId -->
+  <delete id="delByShareId" parameterType="TAuthorityShare" >
+    delete from yun_dk_authority_share
+    where share_id = #{shareId} and share_type = #{shareType}
+  </delete>
+  
+  <!-- 批量删除 -->
+  <delete id="delBatchById" parameterType="java.util.List" >
+    delete from yun_dk_authority_share where id IN
+    <foreach collection="list" item="fid" separator="," open="(" close=")">
+    	#{fid}
+    </foreach >
+  </delete>
+  
+  <!-- 删除,根据文件夹code -->
+  <delete id="delByCode" parameterType="TAuthorityShare">
+  	delete from yun_dk_authority_share
+  	where employee_id = #{employeeId} and open_type = #{openType } and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TAuthorityShare" >
+    insert into yun_dk_authority_share (open_id, open_type, 
+      oper_auth, share_id, share_type, employee_id, folder_code, folder_id)
+    values (#{openId,jdbcType=INTEGER}, #{openType,jdbcType=TINYINT}, 
+      #{operAuth,jdbcType=TINYINT}, #{shareId,jdbcType=VARCHAR}, #{shareType,jdbcType=TINYINT}, 
+      #{employeeId,jdbcType=INTEGER}, #{folderCode}, #{folderId,jdbcType=INTEGER})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TAuthorityShare" >
+    update yun_dk_authority_share
+    <set >
+      <if test="openId != null" >
+        open_id = #{openId,jdbcType=INTEGER},
+      </if>
+      <if test="openType != null" >
+        open_type = #{openType,jdbcType=TINYINT},
+      </if>
+      <if test="operAuth != null" >
+        oper_auth = #{operAuth,jdbcType=TINYINT},
+      </if>
+      <if test="shareId != null" >
+        share_id = #{shareId,jdbcType=VARCHAR},
+      </if>
+      <if test="shareType != null" >
+        share_type = #{shareType,jdbcType=TINYINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="folderId != null" >
+        folder_id = #{folderId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据父文件id查询权限(根据前端设计，查找值应是唯一) -->
+  <select id="selectOpenAuthById" parameterType="TAuthorityShareQuery" resultMap="BaseResultMap">
+    SELECT 
+	<include refid="TBase_Column_List" />
+    FROM 
+    	yun_dk_authority_share t
+    LEFT JOIN 
+    	yun_cp_workgroup_employee we ON t.share_type = 4 and t.share_id = we.workgroup_id
+    WHERE 
+    	folder_id = #{folderId} and (share_type = 3 
+    	or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR}) 
+    	or (share_type = 1 and share_id = #{shareDid,jdbcType=VARCHAR})
+    	or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+  </select>
+  
+  <!-- 根据分享文件id或文件夹id查询权限 -->
+  <select id="selectOpenAuth" parameterType="TAuthorityShareQuery" resultMap="BaseResultMap">
+    SELECT 
+	<include refid="TBase_Column_List" />
+    FROM 
+    	yun_dk_authority_share t
+    LEFT JOIN 
+    	yun_cp_workgroup_employee we ON t.share_type = 4 and t.share_id = we.workgroup_id
+    WHERE 
+    	open_id = #{openId} and open_type = #{openType} 
+    	and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR}) 
+    	or (share_type = 1 and  #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%'))
+    	or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+  </select>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+	  <if test="openId != null and openId > 0" >
+        AND t.open_id = #{openId,jdbcType=INTEGER}
+      </if>
+      <if test="openType != null and openType > 0" >
+        AND t.open_type = #{openType,jdbcType=TINYINT}
+      </if>
+      <if test="operAuth != null and operAuth > 0" >
+        AND t.oper_auth = #{operAuth,jdbcType=TINYINT}
+      </if>
+      <if test="shareEid != null and shareEid != ''" >
+        AND t.share_id = #{shareEid,jdbcType=VARCHAR}
+      </if>
+      <if test="shareDid != null and shareDid != ''" >
+        AND t.share_id = #{shareDid,jdbcType=VARCHAR}
+      </if>
+      <if test="shareWid != null and shareWid != ''" >
+        AND t.share_id = #{shareWid,jdbcType=VARCHAR}
+      </if>
+      <if test="shareType != null and shareType > 0" >
+        AND t.share_type = #{shareType,jdbcType=TINYINT}
+      </if>
+      <if test="employeeId != null and employeeId > 0" >
+        AND t.employee_id = #{employeeId,jdbcType=INTEGER}
+      </if>
+      <if test="folderId != null and folderId > 0" >
+        AND t.folder_id = #{folderId,jdbcType=INTEGER}
+      </if>
+   </sql>
+   
+  <!-- 级联查文件对象 -->
+  <select id="selectFile" parameterType="java.lang.Integer" resultMap="FileMap">
+  		select *,(select count(1) from yun_dk_file_version where file_id = t.id) as file_version_num from yun_dk_file t where id = #{fiid}
+  </select>
+  
+  <!-- 级联查文件夹对象 -->
+  <select id="selectFolder" parameterType="java.util.Map" resultMap="FolderMap">
+  		select * from yun_dk_folder where id = #{foid}
+  </select>
+  
+  <!-- 条件查询-->
+  <select id="selectByQuery" parameterType="TAuthorityShareQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_authority_share t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 查询文件对应权限及关联部门名和员工名-->
+  <select id="selectRelationNameByOpenId" parameterType="TAuthorityShareQuery" resultMap="BaseResultMap">
+    SELECT t.share_type,t.oper_auth,d.dept_name as share_dept_name,e.employee_name as share_employee_name,wg.workgroup_name
+    FROM 
+    	yun_dk_authority_share t 
+	LEFT JOIN yun_cp_employee e ON t.share_type = 2 and share_id = e.id 
+	LEFT JOIN yun_cp_department d ON t.share_type = 1 and share_id = d.id
+	LEFT JOIN yun_cp_workgroup wg on t.share_type = 4 and t.share_id = wg.id
+	where open_id = #{openId} and open_type = #{openType} and t.employee_id = #{employeeId}
+  </select>
+  
+   <!-- 文件排序列 -->
+   <sql id="File_Order_List" >
+   	fi.update_time,fi.file_name as fname,fi.file_size as fsize
+   </sql>
+   <!-- 文件夹排序列 -->
+   <sql id="Folder_Order_List" >
+   	fo.update_time,fo.folder_name as fname,0 as fsize
+   </sql>
+  
+  <!-- 排序类型 -->
+  <sql id="Order_By_Condition">
+  	<if test='orderIndex != null and orderIndex =="1"'>
+  		order by fname asc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="2"'>
+  		order by fname desc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="3"'>
+  		order by update_time asc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="4"'>
+  		order by update_time desc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="5"'>
+  		order by fsize asc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="6"'>
+  		order by fsize desc
+  	</if>
+  </sql>
+  
+  <!-- 我的分享列表-->
+  <select id="selectShareByQuery" parameterType="TAuthorityShareQuery" resultMap="ShareResultMap">
+  	select * from
+    (
+	    select 
+			<include refid="Folder_Column_List" />
+			,<include refid="Folder_Order_List" />
+	    from yun_dk_authority_share t
+			left join yun_dk_folder fo on t.open_id = fo.id
+	    where t.open_type = 1
+	    	<include refid="Page_Query_Condition" />
+		GROUP BY t.open_id,t.open_type
+    UNION ALL
+	    select 
+			<include refid="File_Column_List" />
+			,<include refid="File_Order_List" />
+	    from yun_dk_authority_share t
+			left join yun_dk_file fi on t.open_id = fi.id
+	    where t.open_type = 2
+	    	<include refid="Page_Query_Condition" />
+		GROUP BY t.open_id,t.open_type
+	) as tmptable
+	<include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 他人分享列表，以及公共空间列表（公共空间不搜索直接分享的文件） -->
+  <select id="selectBShareByQuery" parameterType="TAuthorityShareQuery" resultMap="ShareResultMap">
+  	select * from
+  	(
+	  	select 
+			<include refid="Folder_Column_List" />
+			,<include refid="Folder_Order_List" />
+		from yun_dk_authority_share t
+			left join yun_dk_folder fo on t.open_id = fo.id
+			left join yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+	    where t.open_type = 1 
+		    and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+		  	or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' )) or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+		  	<if test="employeeId != null" >
+	  		 	and t.employee_id = #{employeeId} 	  	
+		  	</if>
+		  	<if test="employeeId == null" >
+	  		 	and t.employee_id != 1 	  	
+		  	</if>
+	UNION ALL
+		select 
+			<include refid="File_Column_List" />
+			,<include refid="File_Order_List" />
+		from yun_dk_authority_share t
+			left join yun_dk_file fi on t.open_id = fi.id
+			left join yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+	    where t.open_type = 2
+		    and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+		  	or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' )) or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+		  	<if test="employeeId != null" >
+	  		 	and t.employee_id = #{employeeId} 	  	
+		  	</if>
+		  	<if test="employeeId == null" >
+	  		 	and t.employee_id != 1 	  	
+		  	</if>
+  	) as tmptable
+	<include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 我的分享，文件夹搜素 -->
+  <select id="selectKeyFolderByQuery" parameterType="TAuthorityShareQuery" resultMap="FolderMap">
+  	SELECT
+		fo.id, fo.folder_code, fo.folder_name, fo.folder_type, fo.valid_status, fo.parent_id,
+		fo.employee_id, fo.create_admin, fo.create_time, fo.update_admin, fo.share_status
+		,<include refid="Folder_Order_List" />
+	FROM
+		yun_dk_folder fo,
+		(
+			SELECT
+				fold.folder_code co,
+				fold.employee_id emid
+			FROM
+				yun_dk_authority_share t
+			LEFT JOIN yun_dk_folder fold ON t.open_id = fold.id
+			WHERE
+				open_type = 1
+				AND t.employee_id = #{employeeId}
+			    GROUP BY t.open_id,t.open_type
+		) tmp
+	WHERE
+		fo.folder_code LIKE CONCAT(tmp.co, '%')
+		AND fo.employee_id = tmp.emid
+	<if test="queryName != null and queryName != ''" >
+		AND fo.folder_name like CONCAT('%',#{queryName},'%')
+	</if>
+	<include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 我的分享，文件搜素 -->
+  <select id="selectKeyFileByQuery" parameterType="TAuthorityShareQuery" resultMap="FileMap">
+  	select * from
+  	(
+	  	SELECT
+			fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+	    	fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, fi.share_status, fi.server_code
+	    	,<include refid="File_Order_List" />
+		FROM
+			yun_dk_file fi,
+			(
+				SELECT
+					fold.folder_code co,
+					fold.employee_id emid
+				FROM
+					yun_dk_authority_share t
+				LEFT JOIN yun_dk_folder fold ON t.open_id = fold.id
+				WHERE
+					open_type = 1
+					AND t.employee_id = #{employeeId}
+			    GROUP BY t.open_id,t.open_type
+			) tmp
+		WHERE
+			fi.folder_code LIKE CONCAT(tmp.co, '%')
+			AND fi.employee_id = tmp.emid
+		<if test="queryName != null and queryName != ''" >
+			AND fi.file_name like CONCAT('%',#{queryName},'%')
+		</if>
+		UNION
+		SELECT
+			fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+	    	fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, fi.share_status, fi.server_code
+	    	,<include refid="File_Order_List" />
+		FROM
+			yun_dk_file fi,
+			(
+				SELECT
+					fold.folder_code co,
+					fold.employee_id emid
+				FROM
+					yun_dk_authority_share t
+				LEFT JOIN yun_dk_folder fold ON t.open_id = fold.id
+				WHERE
+					open_type = 1
+					AND t.employee_id = #{employeeId}
+			    GROUP BY t.open_id,t.open_type
+			) tmp, yun_dk_file_sign fs ,yun_dk_sign sign
+		WHERE
+			fi.folder_code LIKE CONCAT(tmp.co, '%')
+			AND fi.employee_id = tmp.emid
+			AND fi.id = fs.file_id
+			AND fs.sign_id = sign.id
+		<if test="queryName != null and queryName != ''" >
+			AND sign.sign_name = #{queryName}
+		</if>
+		UNION
+		select 
+	  	  	fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+		  	fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, fi.share_status, fi.server_code
+		  	,<include refid="File_Order_List" />
+	    from yun_dk_authority_share t
+			left join yun_dk_file fi on t.open_id = fi.id
+		where t.open_type = 2
+			<include refid="Page_Query_Condition" />
+		<if test="queryName != null and queryName != ''" >
+			AND fi.file_name like CONCAT('%',#{queryName,jdbcType=VARCHAR},'%' )
+			UNION
+			SELECT 
+			  fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+			  fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, fi.share_status, fi.server_code
+			  ,<include refid="File_Order_List" />
+			FROM yun_dk_authority_share t
+				LEFT JOIN yun_dk_file fi on t.open_id = fi.id
+				LEFT JOIN yun_dk_file_sign fs ON fi.id = fs.file_id 
+				LEFT JOIN yun_dk_sign sign ON fs.sign_id = sign.id
+			WHERE t.open_type = 2
+				AND sign.sign_name = #{queryName,jdbcType=VARCHAR}
+				<include refid="Page_Query_Condition" />
+			GROUP BY t.open_id,t.open_type
+		</if>
+	) as tmptable
+	<include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 他人分享，以及公共空间，文件夹搜素 -->
+  <select id="selectBKeyFolderByQuery" parameterType="TAuthorityShareQuery" resultMap="FolderMap">
+  	SELECT
+		fo.id, fo.folder_code, fo.folder_name, fo.folder_type, fo.valid_status, fo.parent_id,
+		fo.employee_id, fo.create_admin, fo.create_time, fo.update_admin, tmp.au as oper_auth, tmp.opid as open_id
+		,<include refid="Folder_Order_List" />
+	FROM
+		yun_dk_folder fo,
+		(
+			SELECT
+				t.open_id opid,
+				t.oper_auth au,
+				fold.folder_code co,
+				fold.employee_id emid
+			FROM
+				yun_dk_authority_share t
+			LEFT JOIN yun_dk_folder fold ON t.open_id = fold.id
+			LEFT JOIN yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+			WHERE
+				open_type = 1
+			    <if test="employeeId != null" >
+		  		 	and t.employee_id = #{employeeId} 	  	
+			  	</if>
+			  	<if test="employeeId == null" >
+		  		 	and t.employee_id != 1 	  	
+			  	</if>
+			    and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+			  	or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' )) 
+			  	or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+		) tmp
+	WHERE
+		fo.folder_code LIKE CONCAT(tmp.co, '%')
+		AND fo.employee_id = tmp.emid
+	<if test="queryName != null and queryName != ''" >
+		AND fo.folder_name like CONCAT('%',#{queryName},'%')
+	</if>
+	<include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 他人分享，以及公共空间，文件搜素（公共空间不搜索直接分享的文件） -->
+  <select id="selectBKeyFileByQuery" parameterType="TAuthorityShareQuery" resultMap="FileMap">
+  	select * from
+  	(
+	  	SELECT
+			fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+	    	fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, tmp.au as oper_auth, fi.server_code
+	    	,<include refid="File_Order_List" />
+		FROM
+			yun_dk_file fi,
+			(
+				SELECT
+					t.oper_auth au,
+					fold.folder_code co,
+					fold.employee_id emid
+				FROM
+					yun_dk_authority_share t
+				LEFT JOIN yun_dk_folder fold ON t.open_id = fold.id
+				LEFT JOIN yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+				WHERE
+					open_type = 1
+				    <if test="employeeId != null" >
+			  		 	and t.employee_id = #{employeeId} 	  	
+				  	</if>
+				  	<if test="employeeId == null" >
+			  		 	and t.employee_id != 1 	  	
+				  	</if>
+				    and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+				  	or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' ))
+				  	or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+			) tmp
+		WHERE
+			fi.folder_code LIKE CONCAT(tmp.co, '%')
+			AND fi.employee_id = tmp.emid
+		<if test="queryName != null and queryName != ''" >
+			AND fi.file_name like CONCAT('%',#{queryName},'%')
+		</if>
+		UNION
+		SELECT
+			fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+	    	fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, tmp.au as oper_auth, fi.server_code
+	    	,<include refid="File_Order_List" />
+		FROM
+			yun_dk_file fi,
+			(
+				SELECT
+					t.oper_auth au,
+					fold.folder_code co,
+					fold.employee_id emid
+				FROM
+					yun_dk_authority_share t
+				LEFT JOIN yun_dk_folder fold ON t.open_id = fold.id
+				LEFT JOIN yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+				WHERE
+					open_type = 1
+				    <if test="employeeId != null" >
+			  		 	and t.employee_id = #{employeeId} 	  	
+				  	</if>
+				  	<if test="employeeId == null" >
+			  		 	and t.employee_id != 1 	  	
+				  	</if>
+				    and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+				  	or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' ))
+				  	or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+			) tmp, yun_dk_file_sign fs ,yun_dk_sign sign
+		WHERE
+			fi.folder_code LIKE CONCAT(tmp.co, '%')
+			AND fi.employee_id = tmp.emid
+			AND fi.id = fs.file_id
+			AND fs.sign_id = sign.id
+		<if test="queryName != null and queryName != ''" >
+			AND sign.sign_name = #{queryName}
+		</if>
+		UNION
+		SELECT 
+	  	  fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+		  fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, t.oper_auth, fi.server_code
+		  ,<include refid="File_Order_List" />
+	    FROM
+	    	yun_dk_authority_share t
+		LEFT JOIN yun_dk_file fi on t.open_id = fi.id
+		LEFT JOIN yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+		WHERE
+			open_type = 2
+			<if test="employeeId != null" >
+	  		 	and t.employee_id = #{employeeId} 	  	
+		  	</if>
+		  	<if test="employeeId == null" >
+	  		 	and t.employee_id != 1 	  	
+		  	</if>
+	      and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+	  	  or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' ))
+	  	  or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+		<if test="queryName != null and queryName != ''" >
+		  AND fi.file_name like CONCAT('%',#{queryName,jdbcType=VARCHAR},'%' )
+		  UNION
+		  SELECT 
+		    fi.id, fi.file_name, fi.file_type, fi.employee_id, fi.file_size, fi.folder_id,fi.folder_code, fi.file_path, 
+		    fi.file_version, fi.valid_status, fi.create_admin, fi.create_time, fi.update_admin, t.oper_auth, fi.server_code
+		    ,<include refid="File_Order_List" />
+		  FROM
+		  	yun_dk_authority_share t
+		  LEFT JOIN yun_dk_file fi on t.open_id = fi.id
+		  LEFT JOIN yun_dk_file_sign fs ON fi.id = fs.file_id
+		  LEFT JOIN yun_dk_sign sign ON fs.sign_id = sign.id
+		  LEFT JOIN yun_cp_workgroup_employee we on t.share_type = 4 and t.share_id = we.workgroup_id
+		  WHERE open_type = 2
+	        and (share_type = 3 or (share_type = 2 and share_id = #{shareEid,jdbcType=VARCHAR})
+	  	    or (share_type = 1 and #{shareDid,jdbcType=VARCHAR} like CONCAT(share_id,'%' ))
+	  	    or (share_type = 4 and we.employee_id = #{workgroupEmployeeId}))
+		    AND sign.sign_name = #{queryName,jdbcType=VARCHAR}
+		</if>
+	) as tmptable
+	<include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 根据工作组id查询所有关联文件or文件夹的分享 -->
+  <select id="selectAllAuthorityByWorkgroupId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from 
+    	yun_dk_authority_share t,
+    	(select open_id oid,open_type otype from yun_dk_authority_share where share_type = 4 and share_id = #{workgroupId}) s
+    where t.open_id = s.oid and t.open_type = s.otype
+  </select>
+</mapper>

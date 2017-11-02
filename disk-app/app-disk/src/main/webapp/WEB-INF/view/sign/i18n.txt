@@ -1,0 +1,9 @@
+sign_manager -- 标签管理 
+sign_name -- 标签名称
+sign_create -- 新建标签
+assoc_file -- 关联文件
+remove_assoc -- 移除
+sign_lenth -- 标签名最长为16个字。
+operate_target=操作对象
+enter_sign=输入您要创建的标签名称
+sign_library=标签库:

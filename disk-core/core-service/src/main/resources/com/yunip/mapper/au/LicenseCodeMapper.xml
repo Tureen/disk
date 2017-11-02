@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.au.ILicenseCodeDao" >
+  <resultMap id="BaseResultMap" type="TLicenseCode" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="client_code" property="clientCode" jdbcType="VARCHAR" />
+    <result column="license_code" property="licenseCode" jdbcType="VARCHAR" />
+    <result column="license_hour" property="licenseHour" jdbcType="INTEGER" />
+    <result column="register_key" property="registerKey" jdbcType="VARCHAR" />
+    <result column="register_num" property="registerNum" jdbcType="INTEGER" />
+    <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, client_code, license_code, license_hour, register_key, register_num, customer_id, create_admin, create_time, 
+    update_admin, update_time
+  </sql>
+  
+  <!-- 公共数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.client_code, t.license_code, t.license_hour, t.register_key, t.register_num, t.customer_id, t.create_admin, t.create_time, 
+    t.update_admin, t.update_time
+  </sql>
+  
+  <!-- 查询单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_au_license_code
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询,根据客户端id -->
+  <select id="selectByCustomerId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_au_license_code
+    where customer_id = #{customerId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_au_license_code
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 新增单条 -->
+  <insert id="insert" parameterType="TLicenseCode" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_au_license_code (id, client_code, license_code, license_hour, 
+      register_key, register_num, customer_id, create_admin, 
+      create_time, update_admin, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{clientCode,jdbcType=VARCHAR}, #{licenseCode,jdbcType=VARCHAR}, 
+      #{licenseHour,jdbcType=INTEGER}, #{registerKey,jdbcType=VARCHAR}, #{registerNum,jdbcType=INTEGER}, 
+      #{customerId,jdbcType=INTEGER}, #{createAdmin,jdbcType=VARCHAR}, now(), #{updateAdmin,jdbcType=VARCHAR}, now()
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TLicenseCode" >
+    update yun_au_license_code
+    <set >
+      <if test="clientCode != null" >
+        client_code = #{clientCode,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseCode != null" >
+        license_code = #{licenseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseHour != null" >
+        license_hour = #{licenseHour,jdbcType=INTEGER},
+      </if>
+      <if test="registerKey != null" >
+        register_key = #{registerKey,jdbcType=VARCHAR},
+      </if>
+      <if test="registerNum != null" >
+        register_num = #{registerNum,jdbcType=INTEGER},
+      </if>
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=INTEGER},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+   <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  		<if test="clientCode != null and clientCode != ''">
+			AND t.client_code = #{clientCode}
+		</if>
+		<if test="licenseCode != null and licenseCode !=''">
+			AND t.license_code = #{licenseCode}
+		</if>
+		<if test="licenseHour != null and licenseHour > 0 ">
+			AND t.license_hour = #{licenseHour}
+		</if>
+		<if test="registerKey != null and registerKey !=''">
+			AND t.register_key = #{registerKey}
+		</if>
+		<if test="registerNum != null and registerNum > 0 ">
+			AND t.register_num = #{registerNum}
+		</if>
+		<if test="customerId != null and customerId > 0">
+			AND t.customer_id = #{customerId}
+		</if>
+		<if test="createAdmin != null and createAdmin != ''">
+			AND t.create_admin = #{createAdmin}
+		</if>
+		<if test="updateAdmin != null and updateAdmin != ''">
+			AND t.update_admin = #{updateAdmin}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND t.create_time = #{createTime}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			AND t.update_time = #{updateTime}
+		</if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TLicenseCodeQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />
+    from yun_au_license_code t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TLicenseCodeQuery" resultType="java.lang.Integer">
+	select count(1) from yun_au_license_code t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

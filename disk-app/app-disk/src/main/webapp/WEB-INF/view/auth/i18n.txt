@@ -1,0 +1,8 @@
+share -- 分享
+scope -- 范围
+dept -- 部门
+employee -- 人员
+all -- 全公司
+search -- 搜索
+
+project_name -- 云盘管理平台

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<workbook> 
+		<worksheet name="Sheet1">
+		<loop startRow="3" endRow="3" items="employees" var="employee" varType="com.yunip.model.company.Employee">
+			<section startRow="3" endRow="3">
+				<mapping row="3" col="0">employee.employeeCode</mapping>
+				<mapping row="3" col="1">employee.employeeName</mapping>
+				<mapping row="3" col="2">employee.sex</mapping>
+				<mapping row="3" col="3">employee.idCard</mapping>
+				<mapping row="3" col="4">employee.employeeMobile</mapping>
+				<mapping row="3" col="5">employee.employeeTelephone</mapping>
+				<mapping row="3" col="6">employee.employeeEmail</mapping>
+				<mapping row="3" col="7">employee.employeeQq</mapping>
+				<mapping row="3" col="8">employee.employeeWechat</mapping>
+				<mapping row="3" col="9">employee.employeeJob</mapping>
+				<mapping row="3" col="10">employee.deptName</mapping>
+			</section>
+			<loopbreakcondition>
+				<rowcheck offset="0">
+				<cellcheck offset="0"></cellcheck>
+				</rowcheck>
+			</loopbreakcondition>
+		</loop>
+	</worksheet>
+</workbook>

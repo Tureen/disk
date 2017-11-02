@@ -1,0 +1,7 @@
+404_err=抱歉！没找到您要访问的页面！
+500_err=服务器异常，请联系管理员！
+login_timeout=登录失效!
+sorry1_timeout=不好意思，您的登录信息已经失效！
+sorry2_timeout=您可以：点击
+sorry3_timeout=登录
+sorry4_timeout=进入登录界面重新登录。

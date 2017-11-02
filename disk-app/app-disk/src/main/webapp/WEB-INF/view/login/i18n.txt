@@ -1,0 +1,8 @@
+login -- 登录
+login_button -- 登录
+username_prompt -- 请输入用户名
+password_prompt -- 请输入密码
+verification_code_prompt -- 请输入验证码
+verification_code_prompt_second -- 点击换一张
+take_code_prompt -- 请输入提取码
+remember_login -- 记住我的登录状态

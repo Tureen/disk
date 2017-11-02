@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.company.IDepartmentDao" >
+  <resultMap id="BaseResultMap" type="TDepartment" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="dept_char" property="deptChar" jdbcType="CHAR" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+ <resultMap id="simpleMap" type="TSimpleDeptData" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="dept_char" property="deptChar" jdbcType="CHAR" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, dept_char, dept_name, parent_id, create_admin, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 简易数据列 -->
+  <sql id="data_Column_List" >
+	id, dept_char, dept_name, parent_id
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_department
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 查询全部 -->
+  <select id="selectByAll" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" /> 
+  	from yun_cp_department t
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_cp_department
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TDepartment" >
+    insert into yun_cp_department (id, dept_char, dept_name, 
+      parent_id, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=VARCHAR}, #{deptChar,jdbcType=CHAR}, #{deptName,jdbcType=VARCHAR}, 
+      #{parentId,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TDepartment" >
+    update yun_cp_department
+    <set >
+      <if test="deptChar != null" >
+        dept_char = #{deptChar,jdbcType=CHAR},
+      </if>
+      <if test="deptName != null" >
+        dept_name = #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=VARCHAR},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+		<if test="id != null and id !=''">
+			AND t.id = #{id}
+		</if>
+		<if test="deptChar != null and deptChar != ''">
+			AND t.dept_char = #{deptChar}
+		</if>
+		<if test="deptName != null and deptName != ''">
+			AND t.dept_name = #{deptName}
+		</if>
+		<if test="parentId != null and parentId != ''">
+			AND t.parent_id = #{parentId}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND t.create_time = #{createTime}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			AND t.update_time = #{updateTime}
+		</if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TDepartmentQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_department t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TDepartmentQuery" resultType="java.lang.Integer">
+	select count(1) from yun_cp_department t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 获取部门的简易输出对象 -->
+  <select id="selectSimpleDatas" resultMap="simpleMap">
+  	select 
+  	<include refid="data_Column_List" /> 
+  	from yun_cp_department t
+  </select>
+</mapper>

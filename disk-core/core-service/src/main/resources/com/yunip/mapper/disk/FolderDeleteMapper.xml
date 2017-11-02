@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IFolderDeleteDao" >
+  <resultMap id="BaseResultMap" type="TFolderDelete" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="old_id" property="oldId" jdbcType="INTEGER" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="folder_name" property="folderName" jdbcType="VARCHAR" />
+    <result column="folder_type" property="folderType" jdbcType="TINYINT" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="delete_type" property="deleteType" jdbcType="INTEGER" />
+    <result column="action_employee_id" property="actionEmployeeId" jdbcType="INTEGER" />
+    <result column="action_employee_ip" property="actionEmployeeIp" jdbcType="VARCHAR" />
+    <result column="action_admin_id" property="actionAdminId" jdbcType="INTEGER" />
+    <result column="absolute_path" property="absolutePath" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, old_id, folder_code, employee_id, folder_name, folder_type, parent_id, status, delete_type,
+    action_employee_id, action_employee_ip, action_admin_id, absolute_path, create_admin, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 查询数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.old_id, t.folder_code, t.employee_id, t.folder_name, t.folder_type, t.parent_id, t.status, t.delete_type,
+    t.action_employee_id, t.action_employee_ip, t.action_admin_id, t.absolute_path, t.create_admin, t.create_time, t.update_admin, t.update_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_folder_delete
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_folder_delete
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TFolderDelete" >
+    insert into yun_dk_folder_delete (id, old_id, folder_code, 
+      employee_id, folder_name, folder_type, 
+      parent_id, status, delete_type, action_employee_id, 
+      action_employee_ip,action_admin_id, absolute_path ,create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{oldId,jdbcType=INTEGER}, #{folderCode,jdbcType=VARCHAR}, 
+      #{employeeId,jdbcType=INTEGER}, #{folderName,jdbcType=VARCHAR}, #{folderType,jdbcType=TINYINT}, 
+      #{parentId,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, #{deleteType,jdbcType=INTEGER}, #{actionEmployeeId,jdbcType=INTEGER}, 
+      #{actionEmployeeIp,jdbcType=VARCHAR},#{actionAdminId,jdbcType=INTEGER}, #{absolutePath}, #{createAdmin,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateAdmin,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TFolderDelete" >
+    update yun_dk_folder_delete
+    <set >
+      <if test="oldId != null" >
+        old_id = #{oldId,jdbcType=INTEGER},
+      </if>
+      <if test="folderCode != null" >
+        folder_code = #{folderCode,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="folderName != null" >
+        folder_name = #{folderName,jdbcType=VARCHAR},
+      </if>
+      <if test="folderType != null" >
+        folder_type = #{folderType,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="deleteType != null" >
+        delete_type = #{deleteType,jdbcType=INTEGER},
+      </if>
+      <if test="actionEmployeeId != null" >
+        action_employee_id = #{actionEmployeeId,jdbcType=INTEGER},
+      </if>
+      <if test="actionEmployeeIp != null" >
+        action_employee_ip = #{actionEmployeeIp,jdbcType=VARCHAR},
+      </if>
+      <if test="actionAdminId != null" >
+        action_admin_id = #{actionAdminId,jdbcType=INTEGER},
+      </if>
+      <if test="absolutePath != null" >
+        absolute_path = #{absolutePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据最上级直属文件夹，修改子文件夹状态 -->
+  <update id="updateByDeleteType" parameterType="TFolderDelete">
+  	update yun_dk_folder_delete set action_admin_id = #{actionAdminId}, status = #{status}
+  	where delete_type = #{deleteType}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  	  <if test="oldId != null" >
+        AND old_id = #{oldId,jdbcType=INTEGER}
+      </if>
+	  <if test="folderName != null and folderName != ''" >
+        AND folder_name like CONCAT('%', #{folderName,jdbcType=VARCHAR},'%' ) 
+      </if>
+      <if test="folderType != null" >
+        AND folder_type = #{folderType,jdbcType=INTEGER}
+      </if>
+      <if test="employeeId != null" >
+        AND employee_id = #{employeeId,jdbcType=INTEGER}
+      </if>
+      <if test="parentId != null" >
+        AND parent_id = #{parentId,jdbcType=INTEGER}
+      </if>
+      <if test="folderCode != null and folderCode != ''" >
+        AND folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="status != null" >
+        AND status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="deleteType != null" >
+        AND delete_type = #{deleteType,jdbcType=INTEGER}
+      </if>
+      <if test="actionEmployeeId != null" >
+        AND action_employee_id = #{actionEmployeeId,jdbcType=INTEGER}
+      </if>
+      <if test="actionEmployeeIp != null and actionEmployeeIp != ''" >
+        AND action_employee_ip like CONCAT('%' ,#{actionEmployeeIp,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="actionAdminId != null" >
+        AND action_admin_id = #{actionAdminId,jdbcType=INTEGER}
+      </if>
+      <if test="absolutePath != null and absolutePath != ''" >
+        AND absolute_path = #{absolutePath,jdbcType=VARCHAR}
+      </if>
+      <if test="employeeName != null and employeeName != ''" >
+        AND e.employee_name like CONCAT('%' , #{employeeName,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="startDate != null and startDate != ''" >
+         <![CDATA[AND t.update_time >= #{startDate,jdbcType=VARCHAR}]]>
+      </if>
+       <if test="endDate != null and endDate != ''" >
+         <![CDATA[AND t.update_time <= #{endDate,jdbcType=VARCHAR}]]>
+      </if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TFolderDeleteQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />,e.employee_name,e2.employee_name as admin_name
+    from yun_dk_folder_delete t
+    left join yun_cp_employee e on e.id = t.employee_id
+    left join yun_cp_employee e2 on e2.id = t.action_admin_id
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.update_time desc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TFolderDeleteQuery" resultType="java.lang.Integer">
+	select count(1) from yun_dk_folder_delete t
+	left join yun_cp_employee e on e.id = t.employee_id
+    left join yun_cp_employee e2 on e2.id = t.action_admin_id
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectAllByQuery" parameterType="TFolderDeleteQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />,e.employee_name,e2.employee_name as admin_name
+    from yun_dk_folder_delete t
+    left join yun_cp_employee e on e.id = t.employee_id
+    left join yun_cp_employee e2 on e2.id = t.action_admin_id
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+  </select>
+</mapper>

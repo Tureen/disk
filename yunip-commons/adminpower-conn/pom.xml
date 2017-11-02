@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.yunip.commons</groupId>
+    <artifactId>commons-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>adminpower-conn</artifactId>
+  <packaging>jar</packaging>
+
+  <name>adminpower-conn</name>
+  <properties>
+		<springframework.version>3.0.5.RELEASE</springframework.version>
+		<powermock.version>1.4.8</powermock.version> 
+  </properties>
+  <dependencies>
+		<dependency>
+			<groupId>com.yunip.commons.utils</groupId>
+			<artifactId>utils-conn</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	    <dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		<!-- 加入c3p0的jar处理数据库连接 -->
+	   <dependency>
+		  <groupId>c3p0</groupId>
+		  <artifactId>c3p0</artifactId>
+		  <version>0.9.1.2</version>
+		</dependency>
+		<!-- 加入aspectj处理切面编程 -->
+		<dependency>
+		  <groupId>org.aspectj</groupId>
+		  <artifactId>aspectjrt</artifactId>
+		  <version>1.7.3</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.aspectj</groupId>
+		  <artifactId>aspectjweaver</artifactId>
+		  <version>1.7.4</version>
+		</dependency>
+		<!-- 加入spring-jdbc处理事物 -->
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-jdbc</artifactId>
+		  <version>${springframework.version}</version>
+		</dependency>
+		<!-- 加入myibatis和spring的集成jar -->
+		<dependency>
+		  <groupId>org.mybatis</groupId>
+		  <artifactId>mybatis-spring</artifactId>
+		  <version>1.2.0</version>
+		</dependency>
+		<!-- 加入Spring注入的动态代理 start-->
+		<dependency>
+		    <groupId>cglib</groupId>
+		    <artifactId>cglib</artifactId>
+		    <version>2.2.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>asm</groupId>
+		    <artifactId>asm</artifactId>
+		    <version>3.3.1</version>
+		</dependency>
+		<!-- 加入Spring注入的动态代理 end-->
+		<dependency>
+			<groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.21</version>
+		</dependency>
+	</dependencies>
+</project>

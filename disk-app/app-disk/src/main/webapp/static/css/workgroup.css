@@ -1,0 +1,419 @@
+.info_list, .add_contacts li, .caption_menu_wrap {
+    position: relative;
+}
+.info_list, .assist_detail, .project-detail {
+    padding: 0 16px;
+    border: 1px solid #e5eaee;
+}
+.scrollbar {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.info_list .row, .info_list .row2, .add_contacts .row2 {
+    padding: 16px 0;
+}
+.file_title, .popup_row, .ldocName, .popup_list .column_bottom, .select_bar, .preview_mode, .detail .row, .add_contacts .row2 .w160, .cgray, .rename span, .full-text-search span, .new-plan-list li .title {
+    height: 28px;
+    line-height: 28px;
+}
+.info_list .row .w160, .add_contacts .row2 .w160, .pro_list .row2 .w160 {
+    width: 160px;
+}
+.info_list .row .w160, .add_contacts .row2 .w160, .pro_list .row2 .w160 {
+    float: left;
+    text-align: right;
+    margin-right: 10px;
+    color: #666;
+}
+.info_list .text, .info_list textarea {
+    float: left;
+}
+.text_wg {
+    height: 18px;
+    line-height: 18px;
+    _line-height: 20px;
+    vertical-align: top;
+    border: 1px solid #ddd;
+    padding: 4px;
+    font-family: "微软雅黑";
+}
+.w290 {
+    width: 290px;
+}
+.info_list .h122 {
+    height: 122px;
+}
+.h110 {
+    height: 110px;
+}
+.label_wg {
+    display: inline-block;
+    margin-right: 10px;
+}
+label {
+    cursor: default;
+}
+.radio {
+    margin-right: 2px;
+}
+.radio, .checkbox {
+    margin: -1px 4px 1px 0;
+    vertical-align: middle;
+}
+.info_list .button {
+    margin-right: 8px;
+}
+textarea {
+    resize: none;
+    border: 1px solid #ddd;
+    padding: 4px;
+    overflow-y: auto;
+}
+body {
+    position: relative;
+}
+html, body {
+    overflow-y: hidden;
+}
+body, button, input, select, textarea {
+    font: 12px /1.5 tahoma,arial,"微软雅黑";
+    color: #333;
+}
+body, h1, h2, h3, h4, h5, h6, p, dl, dt, dd, ul, ol, li, form, fieldset, legend, button, input, textarea, th, td, select, iframe {
+    margin: 0;
+    padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    font-size: 100%;
+}
+ul, li {
+    list-style: none;
+}
+img, input {
+    border: none;
+}
+a {
+    text-decoration: none;
+    color: #333;
+    outline: none;
+}
+option {
+    font-weight: normal;
+    display: block;
+    white-space: pre;
+    min-height: 1.2em;
+    padding: 0px 2px 1px;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    font-size: 100%;
+}
+.userLeft {
+    float: left;
+    width: 140px;
+    height: 398px;
+    overflow: auto;
+    border: 1px solid #96b8e5;
+    
+}
+.userLeft_main {
+    float: left;
+    width: 130px;
+    height: 420px;
+    padding:10px;
+}
+.userRight {
+    float: right;
+    width: 561px;
+    height: 400px;
+    padding: 10px;
+}
+.ztree {
+    padding: 5px 4px;
+    color: #333;
+}
+.selectContent h2, .tl-content h2 {
+    height: 26px;
+    line-height: 26px;
+    border-bottom: 1px solid #96b8e5;
+    background: #e7f0ff;
+    color: #092453;
+    text-indent: 10px;
+}
+.selectContent {
+    height: 158px;
+    border: 1px solid #96b8e5;
+}
+.selectContent2 {
+    height: 228px;
+    margin-bottom: 10px;
+}
+.select_bar, .tl-search {
+    padding: 5px 10px;
+    background: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+.select_title {
+    border-bottom: 1px solid #ddd;
+    background: #f3f3f3;
+}
+.select_title, .select_list li {
+    height: 24px;
+    line-height: 24px;
+    border-bottom: 1px dashed #ddd;
+}
+.select_list {
+    overflow-y: auto;
+    height: 106px;
+}
+.select_page {
+    height: 24px;
+    line-height: 24px;
+    border-top: 1px solid #ddd;
+    background: #f4f4f4;
+    padding: 3px 8px;
+}
+.select_bar #userKey1 {
+    float: left;
+    width: 126px;
+    margin-right: 10px;
+}
+.select_bar .submit {
+    float: left;
+    margin: 1px 0 0 9px;
+    _margin-left: 8px;
+}
+.select_bar .button {
+    width: 52px;
+}
+.ztree {
+    padding: 5px 4px;
+    color: #333;
+}
+.ztree li {
+    line-height: 24px;
+    text-align: left;
+    white-space: nowrap;
+    outline: none;
+}
+.ztree li span.button2.noline_close, .ztree li span.button2.noline_close_active, .ztree li span.button2.roots_close, .ztree li span.button2.root_close, .ztree li span.button2.center_close, .ztree li span.button2.bottom_close {
+    background-position: 0 -36px;
+}
+.ztree li span.button2.root_docu, .ztree li span.button2.noline_docu, .ztree li span.button2.roots_docu, .ztree li span.button2.center_docu, .ztree li span.button2.bottom_docu {
+    background: none;
+}
+.ztree li span.button2.ico_open, .ztree li span.button2.ico_close, .ztree li span.button2.ico_docu, .ztree li span.button2.ico_loading {
+    margin: 2px 6px 0 0;
+}
+.ztree li span.button2.switch {
+    width: 18px;
+    height: 18px;
+}
+.ztree li span.button2 {
+    line-height: 0;
+    margin: 3px 0 0;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: top;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url(../images/zTreeStandard.gif);
+}
+.ztree li span {
+    margin-right: 2px;
+}
+.ztree li a {
+    margin: 0;
+    padding: 1px 2px;
+    cursor: pointer;
+    height: 22px;
+    line-height: 22px;
+    color: #333;
+    background-color: transparent;
+    vertical-align: top;
+    display: inline-block;
+}
+.ztree li span.button2.ico_close {
+    background-position: 0 0;
+}
+.ztree li span.button2.ico_docu {
+    background-position: 0 -72px;
+}
+.column a:hover, .icon_list a:hover, .file_name a:hover, #new_ldoc a:hover, #fileRecord .column_bottom a:hover, .operate_bar a, .column_collect a, .content_list .row a:hover, .comparison a:hover, .attr-detail a, .forumcategory-tabs li a:hover, .atta-line a:hover {
+    color: #3598db;
+}
+.text {
+    height: 18px;
+    line-height: 18px;
+    _line-height: 20px;
+    vertical-align: top;
+    border: 1px solid #ddd;
+    padding: 4px;
+    font-family: "微软雅黑";
+}
+.button {
+    display: inline-block;
+    width: 60px;
+    height: 26px;
+    _line-height: 24px;
+    text-align: center;
+    background: #2b97e0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #2178b1;
+    color: #fff;
+    _filter: chroma(color=#000000);
+    cursor: pointer;
+}
+.select {
+    width: 114px;
+    background: url(../images/search_bg.gif) no-repeat;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.selectContent .column_id {
+    width: 21px;
+}
+.selectContent .column, .tl-content .column {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+.column_num, .column_id {
+    width: 40px;
+}
+.column {
+    float: left;
+    padding: 0 10px;
+    cursor: default;
+}
+.column_username {
+    width: 100px;
+}
+.selectContent .column_name{
+    width: 94px;
+}
+.selectContent .column_department {
+    width: 108px;
+}
+.selectContent .column_email {
+    width: 148px;
+}
+.selectContent .column_workgroup_name {
+    width: 105px;
+}
+.selectContent .column_workgroup_admin {
+    width: 105px;
+}
+.selectContent .column_workgroup_application_time {
+    width: 125px;
+}
+.selectContent .column_workgroup_approval_time {
+    width: 125px;
+}
+.selectContent .column_workgroup_valid_status {
+    width: 75px;
+}
+.selectContent .column_workgroup_delete {
+    width: 580px;
+    text-align: center;
+    color: gray;
+}
+.selectContent .column_collect, .selectContent .column_del {
+    width: 60px;
+}
+.submenu {
+    display: none;
+    width: 126px;
+    position: absolute;
+    left: 0;
+    top: 29px;
+    padding: 3px;
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 9999999;
+}
+.submenu li a, .file_title .sort ul li a {
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 10px;
+}
+.ellipsis, .submenu li a, .userlist option, .select_list li .column {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.mr10 {
+    margin-right: 10px;
+}
+.dropdown {
+    position: relative;
+    float: left;
+}
+.float {
+    float: left;
+}
+.tl-header, .select_list li {
+    height: 24px;
+    line-height: 24px;
+    border-bottom: 1px dashed #ddd;
+}
+.page_total {
+    float: right;
+    text-align: right;
+}
+.select_page select {
+    float: left;
+    border: 1px solid #95b8e7;
+    padding: 1px 2px;
+}
+.select_page .disabled, .select_page .disabled:hover {
+    filter: alpha(opacity=40);
+    opacity: 0.4;
+}
+.select_page .page_frist {
+    margin-left: 4px;
+}
+.select_page a {
+    float: left;
+    width: 20px;
+    height: 24px;
+    text-indent: -99999px;
+    background: url(../images/pageBtn.gif) no-repeat;
+}
+.select_page .page_prev {
+    background-position: -20px 0;
+}
+.select_page .page_next {
+    background-position: -40px 0;
+}
+.select_page .page_last {
+    background-position: -60px 0;
+}
+.select_page .page_refresh {
+    background-position: -80px 0;
+}
+.select_page .text {
+    width: 30px;
+    padding: 2px;
+    margin: 0 5px;
+}
+.input_text {
+    float: left;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 6px;
+}
+.input_text span {
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+}

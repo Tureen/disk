@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.teamwork.ITeamworkFolderDao" >
+  <resultMap id="BaseResultMap" type="TTeamworkFolder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="folder_name" property="folderName" jdbcType="VARCHAR" />
+    <result column="folder_type" property="folderType" jdbcType="TINYINT" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="folder_fb_version" property="folderFbVersion" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="teamwork_id" property="teamworkId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, folder_name, folder_type, valid_status, folder_code, parent_id, folder_fb_version, 
+    employee_id, teamwork_id, create_admin, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 查询单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_folder
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询员工所在协作的所有文件 -->
+  <select id="selectFolderByEmployeeId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+  	select t.id 
+  	from yun_tw_folder t 
+  	where teamwork_id in 
+  		(select teamwork_id from yun_tw_teamwork_employee where employee_id = #{employeeId});
+  </select>
+  
+  <!-- 根据父文件id查询 -->
+  <select id="selectAllByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from yun_tw_folder t
+  	where t.parent_id = #{parentId}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_tw_folder
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 批量删除 -->
+  <delete id="delByCode" parameterType="TTeamworkFolder" >
+    delete from yun_tw_folder where
+    teamwork_id = #{teamworkId} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 删除多条，根据协作id -->
+  <delete id="delByTeamworkIds" parameterType="TTeamworkFolder">
+  	delete from yun_tw_folder
+  	where teamwork_id in
+  	<foreach collection="ids" item="teamworkid" separator="," open="(" close=")">
+    	#{teamworkid}
+    </foreach>
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TTeamworkFolder" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_tw_folder (id, folder_name, folder_type, 
+      valid_status, folder_code, parent_id, 
+      folder_fb_version, employee_id, teamwork_id, 
+      create_admin, create_time, update_admin, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{folderName,jdbcType=VARCHAR}, #{folderType,jdbcType=TINYINT}, 
+      #{validStatus,jdbcType=TINYINT}, #{folderCode,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, 
+      #{folderFbVersion,jdbcType=INTEGER}, #{employeeId,jdbcType=INTEGER}, #{teamworkId,jdbcType=INTEGER}, 
+      #{createAdmin,jdbcType=VARCHAR}, now(), #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TTeamworkFolder" >
+    update yun_tw_folder
+    <set >
+      <if test="folderName != null" >
+        folder_name = #{folderName,jdbcType=VARCHAR},
+      </if>
+      <if test="folderType != null" >
+        folder_type = #{folderType,jdbcType=TINYINT},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="folderCode != null" >
+        folder_code = #{folderCode,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="folderFbVersion != null" >
+        folder_fb_version = #{folderFbVersion,jdbcType=INTEGER},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="teamworkId != null" >
+        teamwork_id = #{teamworkId,jdbcType=INTEGER},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 排序类型 -->
+  <sql id="Order_By_Condition">
+  	<if test='orderIndex != null  and orderIndex == "1"'>
+  		order by t.folder_name asc
+  	</if>
+  	<if test='orderIndex != null  and orderIndex == "2"'>
+  		order by t.folder_name desc
+  	</if>
+  	<if test='orderIndex != null  and orderIndex == "3"'>
+  		order by t.update_time asc
+  	</if>
+  	<if test='orderIndex != null  and orderIndex == "4"'>
+  		order by t.update_time desc
+  	</if>
+  </sql>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+	  <if test="folderId != null" >
+        AND id = #{folderId,jdbcType=INTEGER}
+      </if>
+	  <if test="folderCode != null and folderCode != ''" >
+        AND folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+      </if>
+	  <if test="folderName != null" >
+        AND binary folder_name = #{folderName,jdbcType=VARCHAR}
+      </if>
+      <if test="employeeId != null" >
+        AND employee_id = #{employeeId,jdbcType=INTEGER}
+      </if>
+      <if test="teamworkId != null" >
+        AND teamwork_id = #{teamworkId,jdbcType=INTEGER}
+      </if>
+      <if test="parentId != null" >
+        AND parent_id = #{parentId,jdbcType=INTEGER}
+      </if>
+      <if test="validStatus != null" >
+        AND valid_status = #{validStatus,jdbcType=TINYINT}
+      </if>
+      <if test="queryName != null and queryName != ''" >
+        AND folder_name like CONCAT('%',#{queryName,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="pFolderId != null" >
+        <!-- 排除对象的ID -->
+        AND id != #{pFolderId,jdbcType=INTEGER}
+      </if>
+      <if test="startDate != null and startDate != ''" >
+         <![CDATA[AND t.create_time >= #{startDate,jdbcType=VARCHAR}]]>
+      </if>
+      <if test="endDate != null and endDate != ''" >
+         <![CDATA[AND t.create_time <= #{endDate,jdbcType=VARCHAR}]]>
+      </if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TTeamworkFolderQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_folder t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    <include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TTeamworkFolderQuery" resultType="java.lang.Integer">
+	select count(1) from yun_tw_folder t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 查询该协作下文件夹下所有子文件编码列表 -->
+  <select id="selectByParentId" parameterType="TTeamworkFolderQuery" resultType="java.lang.String">
+     select folder_code from yun_tw_folder where parent_id = #{parentId,jdbcType=VARCHAR}
+     AND teamwork_id = #{teamworkId,jdbcType=INTEGER}
+  </select>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.au.ILicenseLogDao" >
+  <resultMap id="BaseResultMap" type="TLicenseLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="customer_id" property="customerId" jdbcType="INTEGER" />
+    <result column="action_type" property="actionType" jdbcType="INTEGER" />
+    <result column="oper_content" property="operContent" jdbcType="VARCHAR" />
+    <result column="oper_admin" property="operAdmin" jdbcType="VARCHAR" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <result column="oper_ip" property="operIp" jdbcType="VARCHAR" />
+    <result column="oper_time" property="operTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, customer_id, action_type, oper_content, oper_admin, admin_id, oper_ip, oper_time
+  </sql>
+  
+  <!-- 查询单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_au_license_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_au_license_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 新增单条 -->
+  <insert id="insert" parameterType="TLicenseLog" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_au_license_log (id, customer_id, action_type, 
+      oper_content, oper_admin, admin_id, 
+      oper_ip, oper_time)
+    values (#{id,jdbcType=INTEGER}, #{customerId,jdbcType=INTEGER}, #{actionType,jdbcType=INTEGER}, 
+      #{operContent,jdbcType=VARCHAR}, #{operAdmin,jdbcType=VARCHAR}, #{adminId,jdbcType=INTEGER}, 
+      #{operIp,jdbcType=VARCHAR}, #{operTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TLicenseLog" >
+    update yun_au_license_log
+    <set >
+      <if test="customerId != null" >
+        customer_id = #{customerId,jdbcType=INTEGER},
+      </if>
+      <if test="actionType != null" >
+        action_type = #{actionType,jdbcType=INTEGER},
+      </if>
+      <if test="operContent != null" >
+        oper_content = #{operContent,jdbcType=VARCHAR},
+      </if>
+      <if test="operAdmin != null" >
+        oper_admin = #{operAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="adminId != null" >
+        admin_id = #{adminId,jdbcType=INTEGER},
+      </if>
+      <if test="operIp != null" >
+        oper_ip = #{operIp,jdbcType=VARCHAR},
+      </if>
+      <if test="operTime != null" >
+        oper_time = #{operTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  		<if test="customerId != null">
+			AND t.customer_id = #{customerId}
+		</if>
+		<if test="actionType != null">
+			AND t.action_type = #{actionType}
+		</if>
+		<if test="operContent != null and operContent !=''">
+			AND t.oper_content = #{operContent}
+		</if>
+		<if test="operAdmin != null and operAdmin !=''">
+			AND t.oper_admin = #{operAdmin}
+		</if>
+		<if test="adminId != null">
+			AND t.admin_id = #{adminId}
+		</if>
+		<if test="operIp != null and operIp !=''">
+			AND t.oper_ip = #{operIp}
+		</if>
+		<if test="startDate != null and startDate != ''" >
+         	<![CDATA[AND t.oper_time >= #{startDate,jdbcType=VARCHAR}]]>
+      	</if>
+       	<if test="endDate != null and endDate != ''" >
+         	<![CDATA[AND t.oper_time <= #{endDate,jdbcType=VARCHAR}]]>
+      	</if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TLicenseLogQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_au_license_log t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by oper_time desc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TLicenseLogQuery" resultType="java.lang.Integer">
+	select count(1) from yun_au_license_log t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.company.IEmployeeDao" >
+  <resultMap id="BaseResultMap" type="TEmployee" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="employee_code" property="employeeCode" jdbcType="VARCHAR" />
+    <result column="employee_portrait" property="employeePortrait" jdbcType="VARCHAR" />
+    <result column="employee_char" property="employeeChar" jdbcType="CHAR" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="dept_id" property="deptId" jdbcType="VARCHAR" />
+    <result column="employee_wechat" property="employeeWechat" jdbcType="VARCHAR" />
+    <result column="employee_qq" property="employeeQq" jdbcType="VARCHAR" />
+    <result column="employee_telephone" property="employeeTelephone" jdbcType="VARCHAR" />
+    <result column="employee_mobile" property="employeeMobile" jdbcType="VARCHAR" />
+    <result column="employee_email" property="employeeEmail" jdbcType="VARCHAR" />
+    <result column="employee_job" property="employeeJob" jdbcType="VARCHAR" />
+    <result column="employee_sex" property="employeeSex" jdbcType="TINYINT" />
+    <result column="space_size" property="spaceSize" jdbcType="VARCHAR" />
+    <result column="teamwork_space_size" property="teamworkSpaceSize" jdbcType="VARCHAR" />
+    <result column="introduction" property="introduction" jdbcType="VARCHAR" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="admin_valid_status" property="adminValidStatus" jdbcType="TINYINT" />
+  </resultMap>
+  
+ <resultMap id="simpleMap" type="TSimpleEmpData" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="employee_char" property="employeeChar" jdbcType="CHAR" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="dept_id" property="deptId" jdbcType="VARCHAR" />
+    <result column="employee_mobile" property="employeeMobile" jdbcType="VARCHAR" />
+    <result column="employee_portrait" property="employeePortrait" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   <!-- 公共数据列 -->
+  <sql id="simple_Column_List" >
+    id, employee_name
+  </sql>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, employee_code, employee_portrait, employee_char, employee_name, id_card, dept_id, 
+    employee_wechat, employee_qq, employee_telephone, employee_mobile, employee_email, employee_job,
+    employee_sex, space_size, teamwork_space_size, introduction, valid_status, create_admin, create_time,
+    update_admin, update_time
+  </sql>
+  
+  <!-- 公共数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.employee_code, t.employee_portrait, t.employee_char, t.employee_name, t.id_card, t.dept_id, 
+    t.employee_wechat, t.employee_qq, t.employee_telephone, t.employee_mobile, t.employee_email, t.employee_job,
+    t.employee_sex, t.space_size, t.teamwork_space_size, t.introduction, t.valid_status, t.create_admin, t.create_time, 
+    t.update_admin,  t.update_time, dept.dept_name
+  </sql>
+  
+  <!-- 简易数据列 -->
+  <sql id="data_Column_List" >
+	t.id, t.employee_char, t.employee_name, t.dept_id , t.employee_mobile as mobile,t.employee_portrait
+  </sql>
+  
+  <!-- 全部 不包含 系统人员 -->
+  <select id="selectByAll" resultMap="BaseResultMap">
+    select 
+    <include refid="simple_Column_List" />
+    from yun_cp_employee t where  <![CDATA[ t.id > 9]]>
+  </select>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Query_Column_List" />, dept.dept_name
+    from yun_cp_employee t
+    left join yun_cp_department dept on t.dept_id = dept.id 
+    where t.id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_cp_employee
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TEmployee" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_cp_employee (id, employee_code, employee_portrait, 
+      employee_char, employee_name, id_card, 
+      dept_id, employee_wechat, employee_qq, 
+      employee_telephone, employee_mobile, employee_email,
+      employee_job, employee_sex, space_size, teamwork_space_size,
+      introduction,valid_status, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{employeeCode,jdbcType=VARCHAR}, #{employeePortrait,jdbcType=VARCHAR}, 
+      #{employeeChar,jdbcType=CHAR}, #{employeeName,jdbcType=VARCHAR}, #{idCard,jdbcType=VARCHAR}, 
+      #{deptId,jdbcType=VARCHAR}, #{employeeWechat,jdbcType=VARCHAR}, #{employeeQq,jdbcType=VARCHAR}, 
+      #{employeeTelephone,jdbcType=VARCHAR}, #{employeeMobile,jdbcType=VARCHAR}, #{employeeEmail,jdbcType=VARCHAR},
+      #{employeeJob,jdbcType=VARCHAR}, #{employeeSex,jdbcType=TINYINT}, #{spaceSize,jdbcType=VARCHAR}, #{teamworkSpaceSize},
+      #{introduction,jdbcType=VARCHAR}, #{validStatus,jdbcType=TINYINT}, 
+      #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TEmployee" >
+    update yun_cp_employee
+    <set >
+      <if test="employeeCode != null and employeeCode != ''" >
+        employee_code = #{employeeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="employeePortrait != null and employeePortrait != ''" >
+        employee_portrait = #{employeePortrait,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeChar != null and employeeChar != ''" >
+        employee_char = #{employeeChar,jdbcType=CHAR},
+      </if>
+      <if test="employeeName != null and employeeName != ''" >
+        employee_name = #{employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="idCard != null and idCard != ''" >
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      <if test="deptId != null and deptId != ''" >
+        dept_id = #{deptId,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeWechat != null and employeeWechat != ''" >
+        employee_wechat = #{employeeWechat,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeQq != null and employeeQq != ''" >
+        employee_qq = #{employeeQq,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeTelephone != null and employeeTelephone != ''" >
+        employee_telephone = #{employeeTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeMobile != null and employeeMobile != ''" >
+        employee_mobile = #{employeeMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeEmail != null and employeeEmail != ''" >
+        employee_email = #{employeeEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeJob != null and employeeJob != ''" >
+        employee_job = #{employeeJob,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeSex != null" >
+        employee_sex = #{employeeSex,jdbcType=TINYINT},
+      </if>
+      <if test="spaceSize != null and spaceSize != ''" >
+        space_size = #{spaceSize,jdbcType=VARCHAR},
+      </if>
+      <if test="teamworkSpaceSize != null and teamworkSpaceSize != ''" >
+        teamwork_space_size = #{teamworkSpaceSize,jdbcType=VARCHAR},
+      </if>
+      <if test="introduction != null and introduction != ''" >
+        introduction = #{introduction,jdbcType=VARCHAR},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createAdmin != null and createAdmin != ''" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null and updateAdmin != ''" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+		<if test="id !=null">
+		    and t.id = #{id}
+		</if>
+		<if test="deptId !=null and deptId != ''">
+		    and t.dept_id like CONCAT(#{deptId,jdbcType=VARCHAR},'%' )
+		</if>
+		<if test="employeeMobile != null and employeeMobile != ''">
+		    and t.employee_mobile like CONCAT('%',#{employeeMobile,jdbcType=VARCHAR},'%' )
+		</if>
+		<if test="employeeName != null and employeeName != ''">
+		    and t.employee_name like CONCAT('%',#{employeeName,jdbcType=VARCHAR},'%' )
+		</if>
+		<if test="employeeCode != null and employeeCode != ''">
+		    and t.employee_code like CONCAT('%',#{employeeCode,jdbcType=VARCHAR},'%' )
+		</if>
+		<if test="isAdmin != null">
+		    and is_admin = #{isAdmin,jdbcType=INTEGER}
+		</if>
+		<if test="adminValidStatus !=null">
+         	and admin.valid_status = #{adminValidStatus}
+      	</if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TEmployeeQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />
+    , dept.dept_name, admin.valid_status as admin_valid_status
+    from yun_cp_employee t 
+    left join yun_cp_department dept on t.dept_id = dept.id 
+    left join yun_sys_admin admin on t.id = admin.id 
+    where <![CDATA[ t.id > 1]]>
+    <include refid="Page_Query_Condition" />
+    order by t.dept_id,t.id asc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TEmployeeQuery" resultType="java.lang.Integer">
+	select count(1) from yun_cp_employee t
+	left join yun_sys_admin admin on t.id = admin.id 
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 根据查询条件查询对象(仅查询employee对象) -->
+  <select id="selectEmpByQuery" parameterType="TEmployeeQuery" resultMap="BaseResultMap">
+      select 
+      <include refid="Query_Column_List" /> 
+       from yun_cp_employee t
+       left join yun_sys_admin admin on  admin.id = t.id
+       left join yun_cp_department dept on t.dept_id = dept.id 
+       where 1 = 1
+      <if test="employeeCode !=null and employeeCode != ''">
+         and employee_code = #{employeeCode,jdbcType=VARCHAR}
+      </if>
+      <if test="employeeMobile !=null and employeeMobile != ''">
+         and employee_mobile = #{employeeMobile,jdbcType=VARCHAR}
+      </if>
+      <if test="isAdmin !=null">
+         and is_admin = #{isAdmin}
+      </if>
+      <if test="adminValidStatus !=null">
+         and admin.valid_status = #{adminValidStatus}
+      </if>
+      limit 1;
+  </select>
+  
+  <!-- 获取员工的简易输出对象 -->
+  <select id="selectSimpleDatas" resultMap="simpleMap">
+  	select 
+  	<include refid="data_Column_List" /> 
+  	from yun_cp_employee t
+  	left join yun_sys_admin admin on admin.id = t.id
+  	where t.valid_status = 1 and admin.is_admin = 1 and  <![CDATA[ t.id > 1]]>  <!-- 1 为模拟用户 -->
+  </select>
+</mapper>

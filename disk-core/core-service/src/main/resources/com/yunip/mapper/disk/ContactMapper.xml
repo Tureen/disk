@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IContactDao" >
+  <resultMap id="BaseResultMap" type="TContact" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="contact_id" property="contactId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <resultMap id="ContactEmployeeMap" type="TContact" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="contact_id" property="contactId" jdbcType="INTEGER" />
+	<association column="employee" property="employee" select="selectEmployee"/>
+  </resultMap>
+  
+   <resultMap id="BaseResultEmployeeMap" type="TEmployee" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="employee_code" property="employeeCode" jdbcType="VARCHAR" />
+    <result column="employee_portrait" property="employeePortrait" jdbcType="VARCHAR" />
+    <result column="employee_char" property="employeeChar" jdbcType="CHAR" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+    <result column="dept_id" property="deptId" jdbcType="VARCHAR" />
+    <result column="employee_wechat" property="employeeWechat" jdbcType="VARCHAR" />
+    <result column="employee_qq" property="employeeQq" jdbcType="VARCHAR" />
+    <result column="employee_telephone" property="employeeTelephone" jdbcType="VARCHAR" />
+    <result column="employee_mobile" property="employeeMobile" jdbcType="VARCHAR" />
+    <result column="employee_email" property="employeeEmail" jdbcType="VARCHAR" />
+    <result column="employee_job" property="employeeJob" jdbcType="VARCHAR" />
+    <result column="employee_sex" property="employeeSex" jdbcType="TINYINT" />
+    <result column="space_size" property="spaceSize" jdbcType="VARCHAR" />
+    <result column="introduction" property="introduction" jdbcType="VARCHAR" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="admin_valid_status" property="adminValidStatus" jdbcType="TINYINT" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, employee_id, contact_id
+  </sql>
+  
+  <!-- 查询数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.employee_id, t.contact_id
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_contact
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找单条，根据员工及联系人确认唯一 -->
+  <select id="selectOne" resultType="java.lang.Integer" parameterType="TContact" >
+    select count(1) from yun_cp_contact
+    where employee_id = #{employeeId} and contact_id = #{contactId}
+  </select>
+  
+  <!-- 查找多条，根据员工id -->
+  <select id="selectContactIdByEmployeeId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select contact_id
+    from yun_cp_contact
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找我的联系人  -->
+  <select id="selectByEmployeeId" resultMap="ContactEmployeeMap" parameterType="java.lang.Integer" >
+    select <include refid="Base_Column_List" />,employee_id as employee
+    from yun_cp_contact
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条，根据员工id -->
+  <select id="selectEmployee" resultMap="BaseResultEmployeeMap" parameterType="java.lang.Integer" >
+    select emp.*, dept.dept_name
+    from yun_cp_employee emp
+    left join yun_cp_department dept on emp.dept_id = dept.id 
+    where emp.id = #{employee}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_cp_contact
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 批量删除单条 -->
+  <delete id="batchDelete" parameterType="TContact">
+    DELETE FROM yun_cp_contact
+    WHERE employee_id = #{employeeId,jdbcType=INTEGER}
+    AND contact_id IN 
+    <foreach collection="ids" item="contactid" separator="," open="(" close=")">
+    	#{contactid}
+    </foreach >
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TContact" >
+    insert into yun_cp_contact (id, employee_id, contact_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{employeeId,jdbcType=INTEGER}, #{contactId,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TContact" >
+    update yun_cp_contact
+    <set >
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="contactId != null" >
+        contact_id = #{contactId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+    <if test="employeeId != null and employeeId > 0" >
+     And t.employee_id = #{employeeId,jdbcType=INTEGER}
+    </if>
+    <if test="contactId != null and contactId > 0" >
+     And t.contact_id = #{contactId,jdbcType=INTEGER}
+    </if>
+    <if test="employeeName != null and employeeName !=''" >
+     And e.employee_name like CONCAT('%',#{employeeName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="deptId != null and deptId > 0" >
+     And e.dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+    <if test="adminValidStatus !=null">
+   	 and admin.valid_status = #{adminValidStatus}
+   	</if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TContactQuery" resultMap="ContactEmployeeMap">
+    select 
+    <include refid="Query_Column_List" />,contact_id as employee
+    from yun_cp_contact t
+    left join yun_cp_employee e on t.contact_id = e.id
+    left join yun_sys_admin admin ON e.id = admin.id
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by e.dept_id,e.id asc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TContactQuery" resultType="java.lang.Integer">
+	select count(1) from yun_cp_contact t
+	left join yun_cp_employee e on t.employee_id = e.id
+	left join yun_sys_admin admin ON e.id = admin.id
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.authority.IRoleDao" >
+  <resultMap id="BaseResultMap" type="TRole" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="role_desc" property="roleDesc" jdbcType="VARCHAR" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="system_code" property="systemCode" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, role_name, role_desc, valid_status, system_code, create_admin, create_time, update_admin, 
+    update_time
+  </sql>
+  
+  <!-- 删除 -->
+  <delete id="delById" parameterType="TRole" >
+    delete from yun_sys_role
+    where id = #{id,jdbcType=INTEGER}
+    and system_code = #{systemCode,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 根据主键查询对象 -->
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TRole" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_sys_role (id, role_name, role_desc, 
+      valid_status, system_code, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{roleDesc,jdbcType=VARCHAR}, 
+      #{validStatus,jdbcType=TINYINT}, #{systemCode,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+ 
+  <!-- 修改 -->
+  <update id="update" parameterType="TRole" >
+    update yun_sys_role
+    <set >
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleDesc != null" >
+        role_desc = #{roleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="systemCode != null" >
+        system_code = #{systemCode,jdbcType=VARCHAR},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      update_time = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and system_code = #{systemCode,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 条件语句 -->
+  <sql id="Page_Query_Condition">
+  	<if test="id != null and id > 0">  
+        AND id = #{id}
+    </if>
+  	<if test="validStatus != null">  
+        AND valid_status = #{validStatus}
+    </if>
+    <if test="roleName != null and roleName != ''">  
+        AND role_name like CONCAT('%', #{roleName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="roleDesc != null and roleDesc != ''">  
+        AND role_desc like CONCAT('%', #{roleDesc,jdbcType=VARCHAR},'%')
+    </if>
+  </sql>
+  
+  <!-- 条件查询列表 -->
+  <select id="selectByQuery" resultMap="BaseResultMap" parameterType="TRoleQuery" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_role where system_code = #{systemCode}
+    <include refid="Page_Query_Condition" />
+    order by id DESC limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询总数 -->
+  <select id="selectCountByQuery" parameterType="TRoleQuery" resultType="java.lang.Integer" >
+    select count(1) from yun_sys_role where system_code = #{systemCode}
+    <include refid="Page_Query_Condition" />
+  </select>
+</mapper>

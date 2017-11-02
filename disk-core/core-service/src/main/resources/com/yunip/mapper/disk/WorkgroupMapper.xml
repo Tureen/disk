@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IWorkgroupDao" >
+  <resultMap id="BaseResultMap" type="TWorkgroup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="workgroup_name" property="workgroupName" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="valid_status" property="validStatus" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="simpleMap" type="TSimpleWorkgroupData" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="workgroup_name" property="workgroupName" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="valid_status" property="validStatus" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, workgroup_name, employee_id, valid_status, remark, create_admin, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 简易数据列 -->
+  <sql id="data_Column_List" >
+	id, workgroup_name, remark, employee_id, create_admin, valid_status
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_workgroup
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条id根据所属员工id -->
+  <select id="selectByEmployee" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select id from yun_cp_workgroup
+    where employee_id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找所有开启的工作组 -->
+  <select id="selectByAll" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_workgroup
+    where valid_status = 1
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_cp_workgroup
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 批量删除单条 -->
+  <delete id="batchDelete" parameterType="TWorkgroup">
+    DELETE FROM yun_cp_workgroup
+    WHERE employee_id = #{employeeId,jdbcType=INTEGER}
+    AND id IN 
+    <foreach collection="ids" item="workgroupid" separator="," open="(" close=")">
+    	#{workgroupid}
+    </foreach >
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TWorkgroup" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_cp_workgroup (id, workgroup_name, employee_id, valid_status,
+      remark, create_admin, create_time, update_admin, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{workgroupName,jdbcType=VARCHAR}, #{employeeId,jdbcType=INTEGER}, #{validStatus,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR}, now(), #{updateAdmin,jdbcType=VARCHAR}, 
+      now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TWorkgroup" >
+    update yun_cp_workgroup
+    <set >
+      <if test="workgroupName != null" >
+        workgroup_name = #{workgroupName,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+    <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+    <if test="workgroupName != null and workgroupName !=''" >
+     And workgroup_name like CONCAT('%',#{workgroupName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="employeeId != null and employeeId > 0" >
+     And employee_id = #{employeeId,jdbcType=INTEGER}
+    </if>
+    <if test="validStatus != null and validStatus > 0" >
+     And valid_status = #{validStatus,jdbcType=INTEGER}
+    </if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TWorkgroupQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_workgroup t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TWorkgroupQuery" resultType="java.lang.Integer">
+	select count(1) from yun_cp_workgroup t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 获取工作组的简易输出对象 -->
+  <select id="selectSimpleDatas" resultMap="simpleMap">
+  	select 
+  	<include refid="data_Column_List" /> 
+  	from yun_cp_workgroup t
+  </select>
+</mapper>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.teamwork.ITeamworkFileDao" >
+  <resultMap id="BaseResultMap" type="TTeamworkFile" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="teamwork_id" property="teamworkId" jdbcType="INTEGER" />
+    <result column="file_size" property="fileSize" jdbcType="BIGINT" />
+    <result column="file_fb_version" property="fileFbVersion" jdbcType="INTEGER" />
+    <result column="folder_id" property="folderId" jdbcType="INTEGER" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="file_version" property="fileVersion" jdbcType="INTEGER" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="encrypt_status" property="encryptStatus" jdbcType="TINYINT" />
+    <result column="encrypt_key" property="encryptKey" jdbcType="VARCHAR" />
+    <result column="server_code" property="serverCode" jdbcType="VARCHAR" />
+    <result column="file_version_num" property="fileVersionNum" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, file_name, file_type, employee_id, teamwork_id, file_size, file_fb_version, folder_id, 
+    folder_code, file_path, file_version, valid_status, create_admin, create_time, update_admin, 
+    update_time, encrypt_status, encrypt_key, server_code
+  </sql>
+
+  <!-- 查询单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_file
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询员工所在协作的所有文件 -->
+  <select id="selectFileByEmployeeId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+  	select t.id 
+  	from yun_tw_file t 
+  	where teamwork_id in 
+  		(select teamwork_id from yun_tw_teamwork_employee where employee_id = #{employeeId});
+  </select>
+  
+  <!-- 根据父文件id查询 -->
+  <select id="selectAllByFolderId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from yun_tw_file t
+  	where t.folder_id = #{folderId}
+  </select>
+  
+  <!-- 获取总共所有使用的文件大小 -->
+  <select id="selectSumUseSpace" parameterType="java.lang.Integer" resultType="java.lang.Long">
+     select sum(file_size) from yun_tw_file where teamwork_id in (select id from yun_tw_teamwork where employee_id = #{employeeId,jdbcType=INTEGER})
+  </select>
+  
+  <!-- 获取文件路径, 根据协作id集 -->
+  <select id="selectPathByTeamworkIds" parameterType="TTeamworkfile" resultType="java.lang.String">
+  	select t.file_path
+  	from yun_tw_file t 
+  	where teamwork_id in
+  	<foreach collection="ids" item="teamworkid" separator="," open="(" close=")">
+    	#{teamworkid}
+    </foreach >
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_tw_file
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 批量删除 -->
+  <delete id="delByCode" parameterType="TTeamworkFile" >
+    delete from yun_tw_file where
+    teamwork_id = #{teamworkId} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 删除多条，根据协作id集 -->
+  <delete id="delByTeamworkIds" parameterType="TTeamworkFile">
+  	delete from yun_tw_file
+  	where teamwork_id in
+  	<foreach collection="ids" item="teamworkid" separator="," open="(" close=")">
+    	#{teamworkid}
+    </foreach>
+  </delete>
+
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TTeamworkFile" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_tw_file (id, file_name, file_type, 
+      employee_id, teamwork_id, file_size, 
+      file_fb_version, folder_id, folder_code, 
+      file_path, file_version, valid_status, 
+      create_admin, create_time, update_admin, 
+      update_time, encrypt_status, encrypt_key, 
+      server_code)
+    values (#{id,jdbcType=INTEGER}, #{fileName,jdbcType=VARCHAR}, #{fileType,jdbcType=INTEGER}, 
+      #{employeeId,jdbcType=INTEGER}, #{teamworkId,jdbcType=INTEGER}, #{fileSize,jdbcType=BIGINT}, 
+      #{fileFbVersion,jdbcType=INTEGER}, #{folderId,jdbcType=INTEGER}, #{folderCode,jdbcType=VARCHAR}, 
+      #{filePath,jdbcType=VARCHAR}, #{fileVersion,jdbcType=INTEGER}, #{validStatus,jdbcType=TINYINT}, 
+      #{createAdmin,jdbcType=VARCHAR}, now(), #{updateAdmin,jdbcType=VARCHAR}, 
+      now(), #{encryptStatus,jdbcType=TINYINT}, #{encryptKey,jdbcType=VARCHAR}, 
+      #{serverCode,jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 修改 -->
+  <update id="update" parameterType="TTeamworkFile" >
+    update yun_tw_file
+    <set >
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null" >
+        file_type = #{fileType,jdbcType=INTEGER},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="teamworkId != null" >
+        teamwork_id = #{teamworkId,jdbcType=INTEGER},
+      </if>
+      <if test="fileSize != null" >
+        file_size = #{fileSize,jdbcType=BIGINT},
+      </if>
+      <if test="fileFbVersion != null" >
+        file_fb_version = #{fileFbVersion,jdbcType=INTEGER},
+      </if>
+      <if test="folderId != null" >
+        folder_id = #{folderId,jdbcType=INTEGER},
+      </if>
+      <if test="folderCode != null" >
+        folder_code = #{folderCode,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null" >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="fileVersion != null" >
+        file_version = #{fileVersion,jdbcType=INTEGER},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="encryptStatus != null" >
+        encrypt_status = #{encryptStatus,jdbcType=TINYINT},
+      </if>
+      <if test="encryptKey != null" >
+        encrypt_key = #{encryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="serverCode != null" >
+        server_code = #{serverCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 排序类型 -->
+  <sql id="Order_By_Condition">
+  	<if test='orderIndex != null and orderIndex =="1"'>
+  		order by file_name asc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="2"'>
+  		order by file_name desc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="3"'>
+  		order by update_time asc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="4"'>
+  		order by update_time desc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="5"'>
+  		order by file_size asc
+  	</if>
+  	<if test='orderIndex != null and orderIndex =="6"'>
+  		order by file_size desc
+  	</if>
+  </sql>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+	  <if test="fileName != null and fileName != ''" >
+        AND file_name = #{fileName,jdbcType=VARCHAR}
+      </if>
+      <if test="employeeId != null" >
+        AND employee_id = #{employeeId,jdbcType=INTEGER}
+      </if>
+      <if test="teamworkId != null" >
+        AND teamwork_id = #{teamworkId,jdbcType=INTEGER}
+      </if>
+      <if test="folderId != null" >
+        AND folder_id = #{folderId,jdbcType=INTEGER}
+      </if>
+      <if test="folderCode != null and folderCode != ''" >
+        AND folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="fileVersion != null" >
+        AND file_version = #{fileVersion,jdbcType=INTEGER}
+      </if>
+      <if test="validStatus != null" >
+        AND valid_status = #{validStatus,jdbcType=TINYINT}
+      </if>
+      <if test="queryName != null and queryName != ''" >
+        AND file_name like CONCAT('%',#{queryName,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="filePath != null" >
+        AND file_path = #{filePath,jdbcType=VARCHAR}
+      </if>
+      <if test="pFileId != null" >
+        AND id != #{pFileId,jdbcType=INTEGER}
+      </if>
+      <if test="encryptStatus != null" >
+        AND encrypt_status = #{encryptStatus,jdbcType=TINYINT}
+      </if>
+      <if test="startDate != null and startDate != ''" >
+         <![CDATA[AND t.create_time >= #{startDate,jdbcType=VARCHAR}]]>
+      </if>
+       <if test="endDate != null and endDate != ''" >
+         <![CDATA[AND t.create_time <= #{endDate,jdbcType=VARCHAR}]]>
+      </if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TTeamworkFileQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />, (select count(1) from yun_tw_file_version where file_id = t.id) as file_version_num 
+    from yun_tw_file t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    <include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TTeamworkFileQuery" resultType="java.lang.Integer">
+	select count(1) from yun_tw_file t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

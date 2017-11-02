@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.ITakeCodeDao" >
+  <resultMap id="BaseResultMap" type="TTakeCode" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="take_code" property="takeCode" jdbcType="VARCHAR" />
+    <result column="file_id" property="fileId" jdbcType="INTEGER" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="effective_time" property="effectiveTime" jdbcType="TIMESTAMP" />
+    <result column="effective_date" property="effectiveDate" jdbcType="INTEGER" />
+    <result column="remain_download_num" property="remainDownloadNum" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_size" property="fileSize" jdbcType="DECIMAL" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="INTEGER" />
+    <result column="fUpdate_time" property="fUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, take_code, file_id, employee_id, effective_time, effective_date, remain_download_num, remark, create_admin, 
+    create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 列表数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.take_code, t.file_id, t.employee_id, t.effective_time, t.effective_date, t.remain_download_num, t.remark, t.create_admin, 
+    t.create_time, t.update_admin, t.update_time, fi.file_name, fi.file_size, emp.employee_name,fi.file_type,fi.update_time as fUpdate_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_take_code
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_take_code
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除多条，根据提取码-->
+  <delete id="delByTakeCode" parameterType="java.lang.String" >
+    delete from yun_dk_take_code
+    where take_code = #{takeCode}
+  </delete>
+  
+  <!-- 删除多条,根据文件id -->
+  <delete id="delByFileId" parameterType="java.lang.Integer" >
+    delete from yun_dk_take_code
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除,根据文件夹code -->
+  <delete id="delByCode" parameterType="TTakeCode">
+  	delete from yun_dk_take_code
+  	where employee_id = #{employeeId} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TTakeCode" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_dk_take_code (id, take_code, file_id, 
+      employee_id, folder_code, effective_time, effective_date,
+      remain_download_num, remark, create_admin, create_time, update_admin,
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{takeCode,jdbcType=VARCHAR}, #{fileId,jdbcType=INTEGER}, 
+      #{employeeId,jdbcType=INTEGER}, #{folderCode}, #{effectiveTime,jdbcType=TIMESTAMP}, #{effectiveDate,jdbcType=INTEGER}, 
+      #{remainDownloadNum,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR}, now(), #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TTakeCode" >
+    update yun_dk_take_code
+    <set >
+      <if test="takeCode != null" >
+        take_code = #{takeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="fileId != null" >
+        file_id = #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="effectiveTime != null" >
+        effective_time = #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="effectiveDate != null" >
+        effective_date = #{effectiveDate,jdbcType=INTEGER},
+      </if>
+      <if test="remainDownloadNum != null" >
+        remain_download_num = #{remainDownloadNum,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      update_time = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateRemainDownloadNum" parameterType="TTakeCode">
+  	update yun_dk_take_code set remain_download_num = remain_download_num - 1 where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  	<if test="takeCode != null" >
+     And t.take_code = #{takeCode,jdbcType=VARCHAR}
+    </if>
+    <if test="fileId != null" >
+     And t.file_id = #{fileId,jdbcType=INTEGER}
+    </if>
+    <if test="employeeId != null" >
+	 And t.employee_id = #{employeeId,jdbcType=INTEGER}
+    </if>
+    <if test="openTime != null" >
+     And t.effective_time > #{openTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="queryName != null" >
+     And fi.file_name like CONCAT('%',#{queryName,jdbcType=VARCHAR},'%')
+    </if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TTakeCodeQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />
+    from yun_dk_take_code t
+    left join yun_dk_file fi on t.file_id = fi.id
+    left join yun_cp_employee emp on t.employee_id = emp.id
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.create_time desc
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TTakeCodeQuery" resultType="java.lang.Integer">
+	select count(1) from yun_dk_take_code t
+	left join yun_dk_file fi on t.file_id = fi.id
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

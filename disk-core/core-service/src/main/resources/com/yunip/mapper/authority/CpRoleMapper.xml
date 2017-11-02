@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.authority.ICpRoleDao" >
+  <resultMap id="BaseResultMap" type="TCpRole" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="role_desc" property="roleDesc" jdbcType="VARCHAR" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="system_code" property="systemCode" jdbcType="VARCHAR" />
+    <result column="role_type" property="roleType" jdbcType="TINYINT" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, role_name, role_desc, valid_status, system_code, role_type, employee_id, create_admin, 
+    create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_cp_role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TCpRole" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_cp_role (id, role_name, role_desc, 
+      valid_status, system_code, role_type, 
+      employee_id, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{roleDesc,jdbcType=VARCHAR}, 
+      #{validStatus,jdbcType=TINYINT}, #{systemCode,jdbcType=VARCHAR}, #{roleType,jdbcType=TINYINT}, 
+      #{employeeId,jdbcType=INTEGER}, #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TCpRole" >
+    update yun_cp_role
+    <set >
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleDesc != null" >
+        role_desc = #{roleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="systemCode != null" >
+        system_code = #{systemCode,jdbcType=VARCHAR},
+      </if>
+      <if test="roleType != null" >
+        role_type = #{roleType,jdbcType=TINYINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 条件语句 -->
+  <sql id="Page_Query_Condition">
+  	<if test="id != null and id > 0">  
+        AND id = #{id}
+    </if>
+  	<if test="validStatus != null">  
+        AND valid_status = #{validStatus}
+    </if>
+    <if test="roleName != null and roleName != ''">  
+        AND role_name like CONCAT('%', #{roleName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="roleType != null">  
+        AND role_type = #{roleType}
+    </if>
+    <if test="employeeId != null">  
+        AND employee_id = #{employeeId}
+    </if>
+  </sql>
+  
+  <!-- 条件查询列表 -->
+  <select id="selectByQuery" resultMap="BaseResultMap" parameterType="TCpRole" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_role where 1=1
+    <include refid="Page_Query_Condition" />
+    order by id DESC limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询总数 -->
+  <select id="selectCountByQuery" parameterType="TCpRole" resultType="java.lang.Integer" >
+    select count(1) from yun_cp_role where 1=1
+    <include refid="Page_Query_Condition" />
+  </select>
+</mapper>

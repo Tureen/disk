@@ -1,0 +1,12 @@
+username -- 账号
+password -- 密码
+visitor -- 游客
+hello -- 你好
+overviews -- 总览
+personal_space -- 个人空间 
+management_public_space -- 管理公共空间
+public_space -- 公共空间
+share_space -- 我的共享
+shared_space -- 他人共享
+sign_space -- 标签管理
+takecode_space -- 我的提取码

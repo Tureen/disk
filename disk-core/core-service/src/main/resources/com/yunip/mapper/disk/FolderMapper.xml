@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IFolderDao" >
+  <resultMap id="BaseResultMap" type="TFolder" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <result column="folder_name" property="folderName" jdbcType="VARCHAR" />
+    <result column="folder_type" property="folderType" jdbcType="TINYINT" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="share_status" property="shareStatus" jdbcType="TINYINT" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="oper_auth" property="operAuth" jdbcType="TINYINT" />
+    <result column="open_id" property="openId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, folder_code, folder_name, folder_type, valid_status, parent_id, share_status, employee_id, 
+    create_admin, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_folder
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 精确查找文件夹根据文件夹编码 -->
+  <select id="selectByFolderCode" resultMap="BaseResultMap" parameterType="TFolder">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yun_dk_folder
+    where employee_id = #{employeeId,jdbcType=INTEGER} and folder_code = #{folderCode,jdbcType=VARCHAR}
+  </select>
+  
+  <!-- 恢复文件or文件夹时，精确查询层级目录名 -->
+  <select id="selectRestoreByFolderName" resultMap="BaseResultMap" parameterType="TFolder">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yun_dk_folder
+    where employee_id = #{employeeId,jdbcType=INTEGER} and folder_name = #{folderName} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' ) and LENGTH(folder_code) = #{folderCodeLength}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_folder
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 批量删除 -->
+  <delete id="delByCode" parameterType="TFolder" >
+    delete from yun_dk_folder where
+    employee_id = #{employeeId} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TFolder" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_dk_folder (folder_code, folder_name, 
+      folder_type, valid_status, parent_id,
+      share_status, employee_id, 
+      create_admin, create_time, update_admin, update_time)
+    values (#{folderCode,jdbcType=VARCHAR}, #{folderName,jdbcType=VARCHAR}, 
+      #{folderType,jdbcType=TINYINT}, #{validStatus,jdbcType=TINYINT}, #{parentId,jdbcType=INTEGER},
+      #{shareStatus,jdbcType=TINYINT}, #{employeeId,jdbcType=INTEGER}, #{createAdmin,jdbcType=VARCHAR}, 
+      now(), #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TFolder" >
+    update yun_dk_folder
+    <set >
+      <if test="folderCode != null" >
+        folder_code = #{folderCode,jdbcType=VARCHAR},
+      </if>
+      <if test="folderName != null" >
+        folder_name = #{folderName,jdbcType=VARCHAR},
+      </if>
+      <if test="folderType != null" >
+        folder_type = #{folderType,jdbcType=TINYINT},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="shareStatus != null" >
+        share_status = #{shareStatus,jdbcType=TINYINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      update_time = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 排序类型 -->
+  <sql id="Order_By_Condition">
+  	<if test='orderIndex != null  and orderIndex == "1"'>
+  		order by t.folder_name asc
+  	</if>
+  	<if test='orderIndex != null  and orderIndex == "2"'>
+  		order by t.folder_name desc
+  	</if>
+  	<if test='orderIndex != null  and orderIndex == "3"'>
+  		order by t.update_time asc
+  	</if>
+  	<if test='orderIndex != null  and orderIndex == "4"'>
+  		order by t.update_time desc
+  	</if>
+  </sql>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+	  <if test="folderId != null" >
+        AND id = #{folderId,jdbcType=INTEGER}
+      </if>
+	  <if test="folderCode != null and folderCode != ''" >
+        AND folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+      </if>
+	  <if test="folderName != null" >
+        AND binary folder_name = #{folderName,jdbcType=VARCHAR}
+      </if>
+      <if test="folderType != null" >
+        AND folder_type = #{folderType,jdbcType=TINYINT}
+      </if>
+      <if test="validStatus != null" >
+        AND valid_status = #{validStatus,jdbcType=TINYINT}
+      </if>
+      <if test="shareStatus != null" >
+        AND share_status = #{shareStatus,jdbcType=TINYINT}
+      </if>
+      <if test="parentId != null" >
+        AND parent_id = #{parentId,jdbcType=INTEGER}
+      </if>
+      <if test="employeeId != null" >
+        AND employee_id = #{employeeId,jdbcType=INTEGER}
+      </if>
+       <if test="queryName != null and queryName != ''" >
+        AND folder_name like CONCAT('%',#{queryName,jdbcType=VARCHAR},'%' )
+      </if>
+      <if test="pFolderId != null" >
+        <!-- 排除对象的ID -->
+        AND id != #{pFolderId,jdbcType=INTEGER}
+      </if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TFolderQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_folder t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    <include refid="Order_By_Condition" />
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TFolderQuery" resultType="java.lang.Integer">
+	select count(1) from yun_dk_folder t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 查询该员工下文件夹下所有子文件编码列表 -->
+  <select id="selectByParentId" parameterType="TFolderQuery" resultType="java.lang.String">
+     select folder_code from yun_dk_folder where parent_id = #{parentId,jdbcType=VARCHAR}
+     AND employee_id = #{employeeId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据文件code查询上级文件夹权限 -->
+  <select id="selectAuthByCode" parameterType="TFolderQuery" resultType="java.lang.Integer">
+  	 select sh.oper_auth
+  	 from yun_dk_folder t ,yun_dk_authority_share sh
+  	 where t.employee_id = #{employeeId} and t.id = sh.open_id and sh.open_type = 1 and oper_auth >0 and #{folderCode} like CONCAT(t.folder_code,"%")
+  	 order by sh.oper_auth asc limit 1
+  </select>
+  
+  <!-- 根据文件夹code删除子文件夹 -->
+  <delete id="delByFolderCode" parameterType="java.lang.String">
+     delete from yun_dk_folder where folder_code like  CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+</mapper>

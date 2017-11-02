@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.authority.ICpRolePermissionDao" >
+  <resultMap id="BaseResultMap" type="TCpRolePermission" >
+    <result column="role_id" property="roleId" jdbcType="INTEGER" />
+    <result column="permission_id" property="permissionId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    role_id, permission_id
+  </sql>
+  
+  <!-- 根据roleId查询集合 -->
+  <select id="selectByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_role_permission
+    where role_id = #{roleId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除 -->
+  <delete id="delByRoleId" parameterType="java.lang.Integer" >
+    delete from yun_cp_role_permission
+    where role_id = #{roleId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TCpRolePermission" >
+    insert into yun_cp_role_permission (role_id, permission_id)
+    values (#{roleId,jdbcType=INTEGER}, #{permissionId,jdbcType=INTEGER})
+  </insert>
+  
+  <!-- 查询角色集合对应的不重复权限 -->
+  <select id="selectByRoleIds" resultMap="BaseResultMap" parameterType="TCpRolePermission" >
+    select DISTINCT permission_id,
+    <include refid="Base_Column_List" />
+    from yun_cp_role_permission where role_id in
+    <foreach collection="roleIds" item="roId" separator="," open="(" close=")">
+    	#{roId}
+    </foreach >
+  </select>
+</mapper>

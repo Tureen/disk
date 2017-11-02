@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.config.IReferenceDao" >
+  <resultMap id="BaseResultMap" type="TReference" >
+    <id column="ref_code" property="refCode" jdbcType="VARCHAR" />
+    <id column="ref_key" property="refKey" jdbcType="VARCHAR" />
+    <result column="ref_value" property="refValue" jdbcType="VARCHAR" />
+    <result column="sort_no" property="sortNo" jdbcType="INTEGER" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="default_status" property="defaultStatus" jdbcType="TINYINT" />
+  </resultMap>
+
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    ref_code, ref_key, ref_value, sort_no, valid_status, default_status
+  </sql>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TReference" >
+    insert into yun_syc_reference (ref_code, ref_key, ref_value, 
+      sort_no, valid_status, default_status
+      )
+    values (#{refCode,jdbcType=VARCHAR}, #{refKey,jdbcType=VARCHAR}, #{refValue,jdbcType=VARCHAR}, 
+      #{sortNo,jdbcType=INTEGER}, #{validStatus,jdbcType=TINYINT}, #{defaultStatus,jdbcType=TINYINT}
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TReference" >
+    update yun_syc_reference
+    <set >
+      <if test="refValue != null" >
+        ref_value = #{refValue,jdbcType=VARCHAR},
+      </if>
+      <if test="sortNo != null" >
+        sort_no = #{sortNo,jdbcType=INTEGER},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="defaultStatus != null" >
+        default_status = #{defaultStatus,jdbcType=TINYINT},
+      </if>
+    </set>
+    where ref_code = #{refCode,jdbcType=VARCHAR}
+      and ref_key = #{refKey,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+		<if test="refCode != null and refCode != ''">
+			AND t.ref_code = #{refCode}
+		</if>
+		<if test="refKey != null and refKey != ''">
+			AND t.ref_key = #{refKey}
+		</if>
+		<if test="refValue != null and refValue !=''">  
+       		AND t.ref_value = #{refValue}
+    	</if>
+		<if test="validStatus != null">  
+       		AND t.valid_status = #{validStatus}
+    	</if>
+		<if test="defaultStatus != null">  
+       		AND t.default_status = #{defaultStatus}
+    	</if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TReferenceQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_syc_reference t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.sortNo asc limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TSysConfig" resultType="java.lang.Integer">
+	select count(1) from yun_syc_reference t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

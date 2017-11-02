@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.authority.IRolePermissionDao" >
+  <resultMap id="BaseResultMap" type="TRolePermission" >
+    <id column="permission_id" property="permissionId" jdbcType="INTEGER" />
+    <id column="role_id" property="roleId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    permission_id, role_id
+  </sql>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TRolePermission" >
+    insert into yun_sys_role_permission (permission_id, role_id)
+    values (#{permissionId,jdbcType=INTEGER}, #{roleId,jdbcType=INTEGER})
+  </insert>
+  
+  <!-- 根据roleId查询集合 -->
+  <select id="selectByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_role_permission
+    where role_id = #{roleId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除 -->
+  <delete id="delByRoleId" parameterType="java.lang.Integer" >
+    delete from yun_sys_role_permission
+    where role_id = #{roleId,jdbcType=INTEGER}
+  </delete>
+</mapper>

@@ -1,0 +1,50 @@
+@charset "utf-8";
+/* 你自己的样式 */
+textarea{overflow:auto;resize:none;}
+table{border-collapse:collapse;border-spacing:0;}
+.tab_627{border:1px solid #e5e5e5;color:#313131;}
+.tab_627 th,.tab_627 td{line-height:40px;border:1px solid #e5e5e5;padding-left:20px;}
+.tab_627 th{background-color:#f5fafe;}
+.tab_627 td input[type="text"]{width:177px;height:20px;border:1px solid #d2d2d2;background:#fafafa;line-height:20px;padding:0 5px;}
+.tab_627 td.mr20 span{display:inline-block;margin-right:20px}
+.tab_627_btn{width:124px;height:30px;line-height:30px;background:#5a98de;color:#fff;text-align:center;border-radius:5px;border:none;}
+.tab_627_btn:hover{background:#0a6999;}
+.tab_627 textarea{width:374px;height:159px;background:#fff;border:1px solid #e5e5e5;padding:5px;margin-top:10px;}
+
+.tab_628_btn{width:64px;height:30px;line-height:30px;background:#5a98de;color:#fff;text-align:center;border-radius:5px;border:none;}
+.tab_628_btn:hover{background:#0a6999;}
+
+.tab_629{border:1px solid #e5e5e5;color:#313131;}
+.tab_629 th,.tab_629 td{line-height:40px;border:1px solid #e5e5e5;padding-left:20px;}
+.tab_629 th{background-color:#f5fafe;}
+.tab_629 td input[type="text"]{width:300px;height:20px;border:1px solid #d2d2d2;background:#fafafa;line-height:20px;padding:0 5px;}
+.tab_629 td.mr20 span{display:inline-block;margin-right:20px}
+.tab_629_btn{width:124px;height:30px;line-height:30px;background:#5a98de;color:#fff;text-align:center;border-radius:5px;border:none;}
+.tab_629_btn:hover{background:#0a6999;}
+.tab_629 textarea{width:374px;height:159px;background:#fff;border:1px solid #e5e5e5;padding:5px;margin-top:10px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

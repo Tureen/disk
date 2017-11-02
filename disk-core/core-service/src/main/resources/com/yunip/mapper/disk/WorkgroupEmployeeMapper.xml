@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IWorkgroupEmployeeDao" >
+  <resultMap id="BaseResultMap" type="TWorkgroupEmployee" >
+    <id column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <id column="workgroup_id" property="workgroupId" jdbcType="INTEGER" />
+    <id column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <id column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <id column="employee_email" property="employeeEmail" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    employee_id, workgroup_id
+  </sql>
+  
+  <!-- 查找单条根据组合主键 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="TWorkgroupEmployee" >
+    select
+    <include refid="Base_Column_List" />
+    from yun_cp_workgroup_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+      and workgroup_id = #{workgroupId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条根据关联员工 -->
+  <select id="selectByEmployeeId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select workgroup_id from yun_cp_workgroup_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条员工id根据工作组 -->
+  <select id="selectByWorkgroupId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+	<include refid="Base_Column_List" />, emp.employee_name, dept.dept_name, emp.employee_email
+	from yun_cp_workgroup_employee t
+	left join yun_cp_employee emp on emp.id = t.employee_id
+	left join yun_cp_department dept on emp.dept_id = dept.id
+    where workgroup_id = #{workgroupId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条员工对象根据工作组 -->
+  <select id="selectEmployeeByWorkgroupId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select <include refid="Base_Column_List" />,e.employee_name
+    from yun_cp_workgroup_employee t
+    left join yun_cp_employee e on e.id = t.employee_id
+    where t.workgroup_id = #{workgroupId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条根据组合主键 -->
+  <delete id="delByPrimaryKey" parameterType="TWorkgroupEmployee" >
+    delete from yun_cp_workgroup_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+      and workgroup_id = #{workgroupId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除多条根据关联员工 -->
+  <delete id="delByEmployeeId" parameterType="java.lang.Integer" >
+    delete from yun_cp_workgroup_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除多条根据工作组id -->
+  <delete id="delByWorkgroupId" parameterType="java.lang.Integer" >
+    delete from yun_cp_workgroup_employee
+    where workgroup_id = #{workgroupId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TWorkgroupEmployee" >
+    insert into yun_cp_workgroup_employee (employee_id, workgroup_id)
+    values (#{employeeId,jdbcType=INTEGER}, #{workgroupId,jdbcType=INTEGER})
+  </insert>
+</mapper>

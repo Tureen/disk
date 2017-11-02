@@ -1,0 +1,39 @@
+open -- 打开
+download --下载
+upload -- 上传
+move_to -- 移动到
+copy_to -- 复制到
+rename -- 重命名
+extracted_code -- 提取码
+delete -- 删除
+edit -- 编辑文件
+copy_prompt -- 正在复制文件，请稍候...
+shared_space -- 他人共享
+refresh -- 刷新
+file_name -- 文件名
+no_files -- 此文件夹内没有文件！No files in this folder
+query_no_files -- 没有查询到相关文件！ No query to related files
+sharer -- 分享人
+size -- 大小
+curr_auth -- 当前权限
+update_time -- 更新时间
+new_folder -- 新建文件夹
+ok -- 确定
+cancel -- 取消
+selected -- 您已选择  you have selected 
+files -- 文件 files
+folders -- 目录 folders
+same_files -- 位置已经包含同名的文件夹  with the same name
+select_oper -- ，请选择你的操作: please select your operation:
+exist_files -- 已有的文件夹 existing files
+update_times -- 修改日期: update times:
+copying_files -- 正在复制的文件夹  copying files
+for_rest -- 为其余的 For the rest of
+rename_files -- 重名文件夹 rename files
+perform_oper -- 都执行此操作 perform this operation
+generate_link_prompt -- 生成下载链接及提取码发送给其他同事好友Generate download links and send the code sent to other colleagues
+generate_link -- 创建链接Generate link
+valid_time -- 有效截止时间Valid time
+prompt1 -- 1、设置有效时间，限制提取期限。1, set the valid time to limit the extraction period.
+prompt2 -- 2、不设置有效时间，无限期提取。2, does not set the valid time, infinite period of extraction.
+version -- 版本

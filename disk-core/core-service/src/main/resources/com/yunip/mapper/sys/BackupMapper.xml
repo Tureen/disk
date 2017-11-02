@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.sys.IBackupDao" >
+  <resultMap id="BaseResultMap" type="TBackup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sql_name" property="sqlName" jdbcType="VARCHAR" />
+    <result column="sql_path" property="sqlPath" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, sql_name, sql_path, create_admin, create_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_backup
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yun_sys_backup
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TBackup" >
+    insert into yun_sys_backup (id, sql_name, sql_path, create_admin, create_time
+      )
+    values (#{id,jdbcType=INTEGER},  #{sqlName,jdbcType=VARCHAR}, #{sqlPath,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR},now()
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TBackup" >
+    update yun_sys_backup
+    <set >
+      <if test="sqlPath != null and sqlPath != ''" >
+        sql_path = #{sqlPath,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlName != null and sqlName != ''" >
+        sql_name = #{sqlName,jdbcType=VARCHAR},
+      </if>
+      <if test="createAdmin != null and create != ''" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  	<if test="sqlPath != null and sqlPath != ''">
+  		AND sql_path = #{sqlPath,jdbcType=VARCHAR}
+  	</if>
+  	<if test="sqlName != null and sqlName != ''">
+  		AND sql_name = #{sqlName,jdbcType=VARCHAR}
+  	</if>
+  	<if test="createAdmin != null and createAdmin != ''">
+  		AND create_admin = #{createAdmin,jdbcType=VARCHAR}
+  	</if>
+  	<if test="startDate != null and startDate != ''" >
+         <![CDATA[AND t.create_time >= #{startDate,jdbcType=VARCHAR}]]>
+      </if>
+       <if test="endDate != null and endDate != ''" >
+         <![CDATA[AND t.create_time <= #{endDate,jdbcType=VARCHAR}]]>
+      </if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TBackupQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_backup t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.create_time desc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TBackupQuery" resultType="java.lang.Integer">
+	select count(1) from yun_sys_backup t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

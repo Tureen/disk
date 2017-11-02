@@ -1,0 +1,161 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ include file="/WEB-INF/view/include/global.jsp"%>
+<%@ include file="/WEB-INF/view/include/fancy.jsp"%>
+<script type="text/javascript" src="${plugins}/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="${plugins}/des/des.js"></script>
+<script type="text/javascript" src="${staticpath}/js/share/icon.js?v=20170103"></script>
+<script type="text/javascript">
+	var fileServiceUrl = '${fileServiceUrl}';
+	var identity = '${identity}';
+	var token = '${token}';
+	var spaceType = '${spaceType}';
+</script>
+<body>
+<%@ include file="/WEB-INF/view/include/header.jsp"%>
+<input type="hidden" value="${permissionStr }" id="permissionStr">
+<!-- 右键菜单 -->
+<div class="right_menu" style="width: 138px">
+    <ul class="first">
+        <li class="openMenu rightmouse"><a href="javascript:;"><fmt:message key="open" bundle="${i18n}"/></a></li>
+        <li class="ac_down rightmouse"><a href="javascript:;"><fmt:message key="download" bundle="${i18n}"/></a></li>
+        <li class="ac_share rightmouse"><a href="javascript:;"><fmt:message key="share" bundle="${i18n}"/></a></li>  
+    </ul>
+    <ul>
+        <li class="ac_rename rightmouse"><a href="javascript:;"><fmt:message key="rename" bundle="${i18n}"/></a></li>
+        <li class="ac_edit rightmouse"><a href="javascript:;"><fmt:message key="edit" bundle="${i18n}"/></a></li> 
+    </ul>
+    <ul>
+        <li class="ac_sign rightmouse"><a href="javascript:;"><fmt:message key="sign" bundle="${i18n}"/></a></li>
+        <li class="ac_take rightmouse"><a href="javascript:;"><fmt:message key="extracted_code" bundle="${i18n}"/></a></li>
+        <li class="ac_del rightmouse"><a href="javascript:;"><fmt:message key="delete" bundle="${i18n}"/></a></li>  
+        <li class="ac_reauth rightmouse"><a href="javascript:;"><fmt:message key="remove_permissions" bundle="${i18n}"/></a></li>  
+    </ul>
+</div>
+<div class="box_main">
+	<%@ include file="/WEB-INF/view/include/left.jsp"%>
+	<input type="hidden" id="sessionEmployeeId" value="${sessionScope.employee.id}" />
+    <div class="right_part">
+        <div class="main_con main_con_an"> 
+            <div class="r_topcon r_topcon_an">
+                <div class="actionbox cf">
+                        <div class="crumbs">
+                        	<ul>
+			                <li><i class="tip_d"></i></li>
+			                <li><a href=""><fmt:message key="share_space" bundle="${i18n}"/></a></li>
+			                <span class="array_item"><a class="array_v" href="javascript:void(0);"></a><a class="array_h active" href="javascript:void(0);"></a></span>
+			                </ul>
+			            </div>
+                        <div class="action_btn">
+                            <ul>
+                                <li class="ac_down"><i class="ac_t04"></i><fmt:message key="download" bundle="${i18n}"/></li>
+                                <li class="ac_del"><i class="ac_t08"></i><fmt:message key="delete" bundle="${i18n}"/></li>
+                                <li class="ac_rename"><i class="ac_t11"></i><fmt:message key="rename" bundle="${i18n}"/></li>
+                                <li class="ac_take"><i class="ac_t09"></i><fmt:message key="extracted_code" bundle="${i18n}"/></li>
+                                <li class="ac_sign"><i class="ac_t07"></i><fmt:message key="sign" bundle="${i18n}"/></li>
+                                <li class="ac_share"><i class="ac_t12"></i><fmt:message key="share" bundle="${i18n}"/></li>
+                                <li class="ac_edit"><i class="ac_t13"></i><fmt:message key="edit" bundle="${i18n}"/></li>
+                                <li class="ac_reauth"><i class="ac_t10"></i><fmt:message key="remove_permissions" bundle="${i18n}"/></li>
+                            </ul>
+                        </div>
+                       <input type="hidden" id="operType" value="0" />
+                       <div class="r_search_contain">
+                         <form action="${ctx}/share/listkey" method="post" id="queryForm">
+                            <div class="label_search"><input type="text" placeholder="<fmt:message key="file_name" bundle="${i18n}"/>" id="queryName" name="queryName" value="${query.queryName}"/>
+							<a class="magnifier" href="javascript:searchFile();"></a></div> 
+                         </form>
+                      </div>
+                </div>  
+            </div>
+            <div class="content content_an" style="top:152px">
+            <div class="all_chosebox all_chosebox_an"><label class="tab_check" id="allCheck" for=""><input class="none" type="checkbox"></label><fmt:message key="select_all" bundle="${i18n}"/></div>
+                <c:if test="${fn:length(folder.folders) + fn:length(folder.files) == 0}">
+	                <div id="noneContent" class="tab_contain noline mt10">
+	                    <c:if test="${empty query.queryName}">
+			               <p class="nofile"><img src="${staticpath}/images/nofile.png" alt=""><br><span><i></i><fmt:message key="no_files" bundle="${i18n}"/></span></p>
+			            </c:if>
+			            <c:if test="${not empty query.queryName}">
+			               <p class="nofile"><br><span><i><img src="${staticpath}/images/noselect.png" alt=""></i><fmt:message key="query_no_files" bundle="${i18n}"/></span></p>
+			            </c:if>
+	               </div>
+                </c:if>
+                
+                  <div class="tab_contain">
+                   <!-- 排序列表 -->
+                   <input type="hidden" id="addIndex" value="0" />
+                   <div class="array_list">
+                       <ul>
+                           <li class = "addFolder" style="display: none">
+                               <div class="tips_img tfile"></div>
+                               <p class="txt_name" style="display:none;"></p>
+                               <div class="editName"><input class="input_filename" type="text"  placeholder="<fmt:message key="new_folder" bundle="${i18n}"/>" value="<fmt:message key="new_folder" bundle="${i18n}"/>" maxlength="228"/><a class="true" href="javascript:createFolder();"></a><a class="false" href="#"></a></div>
+                           </li>
+                            
+                           <c:forEach items="${folder.folders}" var="fo">
+                           <li>
+                               <div class="tips_img tfile" key-value="${fo.id }">
+                                     <input class="none" type="checkbox" value="${fo.authorityShare.openId }">
+					    			<input class="none" name="opentype" value="${fo.authorityShare.openType }">
+                               </div>
+                               <i name = "folderCheck"  code="authorityCheck"></i>
+                               <c:if test="${fo.shareStatus == 1}">
+                                 <div class="sharetip"></div>
+                               </c:if>
+                               <p class="txt_name"><a href="${ctx }/share/indexinto/${fo.id }" id="foldername${fo.id }">${fo.folderName }</a></p>
+                               <div class="editName" style="display: none"><input class="input_filename" type="text"  placeholder="<fmt:message key="new_folder" bundle="${i18n}"/>" value="${fo.folderName }" maxlength="228"/><a class="true"  onclick="operRename(this,'${fo.id}',1);"></a><a class="false" href="#"></a></div>
+                           </li>
+                           </c:forEach>
+                            <c:forEach items="${folder.files}" var="fi">
+	                        <li>
+                               <div class="tips_img <c:if test="${fi.fileType != 1 }">t${fi.fileType}</c:if> <c:if test="${fi.fileType == 1 }">imageFile</c:if><c:if test="${fi.fileType > 1 }">previewFile</c:if>"  key-value ="${fi.id }" style="display: table-cell;vertical-align: middle;text-align: center;">
+                                    <c:if test="${fi.fileType == 1 }">
+                                    <img style="max-width:100px;_width:expression(this.width > 100 ? '100px' : this.width);max-height:100px;_height:expression(this.height > 100 ? '100px' : this.height);;vertical-align: middle;" src="${fi.serverUrl}/fileManager/readerthumbImage?params=${fi.id}"></c:if>
+                                    <input class="none" type="checkbox" value="${fi.authorityShare.openId }">
+					    			<input class="none" name="opentype" value="${fi.authorityShare.openType }">
+                               </div>
+                               <i name = "fileCheck"  code="authorityCheck"></i>
+                               <c:if test="${fi.shareStatus == 1}">
+                                 <div class="sharetip"></div>
+                               </c:if>
+                               <div class="txt_name"><a href="#" class="<c:if test="${fi.fileType == 1 }">imageFile</c:if><c:if test="${fi.fileType > 1 }">previewFile</c:if>"  key-value ="${fi.id }" id="filename${fi.id }">${fi.fileName}</a></div>
+                               <div class="editName" style="display: none"><input class="input_filename" type="text"  placeholder="新建文件夹" value="${fi.fileName }" maxlength="228"/><a class="true" onclick="operRename(this,'${fi.id}',2);"></a><a class="false" href="#"></a></div>
+                           </li>
+                           </c:forEach>
+                       </ul>
+                   </div>
+              	</div>
+	            <div class="bottom_txt bottom_txt_an"> <fmt:message key="selected" bundle="${i18n}"/> <i id="fileCount">0</i> <fmt:message key="files" bundle="${i18n}"/>,<i id="folderCount">0 </i><fmt:message key="folders" bundle="${i18n}"/></div>
+	        </div>
+	    </div>
+    </div>
+</div>
+<!-- 复制到-->
+<div class="outlayer con_copy" style="display: none">
+    <p class="bold"><span id="operTypeHtml"></span><%-- <fmt:message key="same_files" bundle="${i18n}"/><fmt:message key="select_oper" bundle="${i18n}"/> --%></p>
+    <div class="copy_action">
+        <div class="copy_file">
+            <p><fmt:message key="exist_files" bundle="${i18n}"/>：</p>
+            <p id="nowFolder"><i class="tipbg tips_bg_files"></i><span id="nowFolderName"></span></p>
+            <p id="nowFile" style="display: none"><i class="tipbg" id="nowFileImg"></i><span id="nowFileName"></span></p>
+            <p class="edit_date"><fmt:message key="update_times" bundle="${i18n}"/><span id="nowUpdateTime"></span></p>
+        </div>
+        <div class="copy_file">
+            <p class="pt20"><fmt:message key="copying_files" bundle="${i18n}"/>：</p>
+            <p id="oldFolder"><i class="tipbg tips_bg_files"></i><span id="oldFolderName"></span></p>
+            <p id="oldFile" style="display: none"><i class="tipbg" id="oldFileImg"></i><span id="oldFileName"></span></p>
+            <p class="edit_date"><fmt:message key="update_times" bundle="${i18n}"/><span id="oldUpdateTime"></span></p>
+        </div>
+    </div>
+    <div class="copy_action" id="moreSameName" style="display: none">
+       <p><label class="tab_check" id="sameNameCheck" for=""><input class="none" type="checkbox"></label><span class="pl5"><fmt:message key="for_rest" bundle="${i18n}"/><i class="red" id="sySame">0</i><fmt:message key="rename_files" bundle="${i18n}"/><fmt:message key="perform_oper" bundle="${i18n}"/></span></p>
+    </div>  
+</div>
+<!-- 删除 -->
+<div class="outlayer con_remove_qx" style="display: none">
+    <p class="color_7d mt20"><span class="color_31"  id="move"></span></p>
+</div>
+<%@ include file="/WEB-INF/view/include/createcode.jsp"%>
+</body>
+</html>

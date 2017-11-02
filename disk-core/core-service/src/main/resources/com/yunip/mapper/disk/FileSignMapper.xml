@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IFileSignDao" >
+  <resultMap id="BaseResultMap" type="TFileSign" >
+    <id column="file_id" property="fileId" jdbcType="INTEGER" />
+    <id column="sign_id" property="signId" jdbcType="INTEGER" />
+    <id column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <id column="folder_code" property="folderCode" jdbcType="VARCHAR" />
+    <id column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <id column="file_type" property="fileType" jdbcType="INTEGER" />
+    <id column="file_size" property="fileSize" jdbcType="DECIMAL" />
+    <id column="file_size" property="fileSize" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    file_id, sign_id
+  </sql>
+  
+  <!-- 搜索文件名数据列 -->
+  <sql id="Key_FileName_List" >
+    file_id, sign_id , file_name ,file_type ,file_size, file.update_time
+  </sql>
+  
+  <!-- 删除,根据条件 -->
+  <delete id="delByFileSign" parameterType="TFileSign" >
+    delete from yun_dk_file_sign
+    where 1 = 1
+    <if test="fileId != null" >
+     And file_id = #{fileId,jdbcType=INTEGER}
+    </if>
+    <if test="signId != null" >
+     And sign_id = #{signId,jdbcType=INTEGER}
+    </if>
+  </delete>
+  
+  <!-- 删除,根据fileId -->
+  <delete id="delByFileId" parameterType="TFileSign" >
+    delete from yun_dk_file_sign
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 根据文件夹code删除 -->
+  <delete id="delByCode" parameterType="TFileSign">
+  	delete from yun_dk_file_sign
+  	where employee_id = #{employeeId} and folder_code like CONCAT(#{folderCode,jdbcType=VARCHAR},'%' )
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TFileSign" >
+    insert into yun_dk_file_sign (file_id, sign_id, employee_id, folder_code)
+    values (#{fileId,jdbcType=INTEGER}, #{signId,jdbcType=INTEGER}, #{employeeId,jdbcType=VARCHAR}, #{folderCode,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  	<if test="fileId != null" >
+     And file_id = #{fileId,jdbcType=INTEGER}
+    </if>
+    <if test="signId != null" >
+     And sign_id = #{signId,jdbcType=INTEGER}
+    </if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TFileSignQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_file_sign t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TFileSignQuery" resultType="java.lang.Integer">
+	select count(1) from yun_dk_file_sign t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 根据文件名查询标签关联 -->
+  <select id="selectKeyByFileName" parameterType="TFileSignQuery" resultMap="BaseResultMap">
+  	select
+  	<include refid="Key_FileName_List" />
+  	from yun_dk_file_sign t
+  	left join yun_dk_file file on file.id = t.file_id
+  	left join yun_dk_sign sign on sign.id = t.sign_id
+  	where sign.employee_id = #{employeeId}
+  	<if test="signId != null">
+  		and t.sign_id = #{signId} 
+  	</if>
+  	<if test="fileName != null and fileName != ''" >
+  		and file.file_name like CONCAT("%",#{fileName},"%")
+  	</if>
+  </select>
+</mapper>

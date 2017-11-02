@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.teamwork.ITeamworkEmployeeDao" >
+  <resultMap id="BaseResultMap" type="TTeamworkEmployee" >
+    <id column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <id column="teamwork_id" property="teamworkId" jdbcType="INTEGER" />
+    <id column="authority_type" property="authorityType" jdbcType="TINYINT" />
+    <id column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <id column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <id column="employee_email" property="employeeEmail" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    employee_id, teamwork_id, authority_type
+  </sql>
+  
+  <!-- 查询单条 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="TTeamworkEmployee" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_teamwork_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+      and teamwork_id = #{teamworkId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条员工id根据协作-->
+  <select id="selectByTeamworkId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+	<include refid="Base_Column_List" />, emp.employee_name, dept.dept_name, emp.employee_email
+	from yun_tw_teamwork_employee t
+	left join yun_cp_employee emp on emp.id = t.employee_id
+	left join yun_cp_department dept on emp.dept_id = dept.id
+    where teamwork_id = #{teamworkId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找多条根据关联员工 -->
+  <select id="selectByEmployeeId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select teamwork_id from yun_tw_teamwork_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delByPrimaryKey" parameterType="TTeamworkEmployee" >
+    delete from yun_tw_teamwork_employee
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+      and teamwork_id = #{teamworkId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除多条，根据协作id -->
+  <delete id="delByTeamworkId" parameterType="java.lang.Integer" >
+    delete from yun_tw_teamwork_employee
+    where teamwork_id = #{teamworkId,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TTeamworkEmployee" >
+    insert into yun_tw_teamwork_employee (employee_id, teamwork_id, authority_type
+      )
+    values (#{employeeId,jdbcType=INTEGER}, #{teamworkId,jdbcType=INTEGER}, #{authorityType,jdbcType=TINYINT}
+      )
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TTeamworkEmployee" >
+    update yun_tw_teamwork_employee
+    <set >
+      <if test="authorityType != null" >
+        authority_type = #{authorityType,jdbcType=TINYINT},
+      </if>
+    </set>
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+      and teamwork_id = #{teamworkId,jdbcType=INTEGER}
+  </update>
+</mapper>

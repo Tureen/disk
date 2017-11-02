@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IWorkgroupApplyDao" >
+  <resultMap id="BaseResultMap" type="TWorkgroupApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="workgroup_id" property="workgroupId" jdbcType="INTEGER" />
+    <result column="apply_employee_id" property="applyEmployeeId" jdbcType="INTEGER" />
+    <result column="apply_status" property="applyStatus" jdbcType="TINYINT" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="workgroup_name" property="workgroupName" jdbcType="VARCHAR" />
+    <result column="apply_employee_name" property="applyEmployeeName" jdbcType="VARCHAR" />
+    <result column="create_employee_name" property="createEmployeeName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, workgroup_id, apply_employee_id, apply_status, create_admin, create_time, update_admin, 
+    update_time
+  </sql>
+  
+  <!-- 查询数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.workgroup_id, t.apply_employee_id, t.apply_status, t.create_admin, t.create_time, t.update_admin, 
+    t.update_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_cp_workgroup_apply
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_cp_workgroup_apply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TWorkgroupApply" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_cp_workgroup_apply (id, workgroup_id, apply_employee_id, 
+      apply_status, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{workgroupId,jdbcType=INTEGER}, #{applyEmployeeId,jdbcType=INTEGER}, 
+      #{applyStatus,jdbcType=TINYINT}, #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TWorkgroupApply" >
+    update yun_cp_workgroup_apply
+    <set >
+      <if test="workgroupId != null" >
+        workgroup_id = #{workgroupId,jdbcType=INTEGER},
+      </if>
+      <if test="applyEmployeeId != null" >
+        apply_employee_id = #{applyEmployeeId,jdbcType=INTEGER},
+      </if>
+      <if test="applyStatus != null" >
+        apply_status = #{applyStatus,jdbcType=TINYINT},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+    <if test="workgroupId != null and workgroupId > 0" >
+     And workgroup_id = #{workgroupId,jdbcType=INTEGER}
+    </if>
+    <if test="applyEmployeeId != null and applyEmployeeId > 0" >
+     And apply_employee_id = #{applyEmployeeId,jdbcType=INTEGER}
+    </if>
+    <if test="applyStatus != null and applyStatus >= 0" >
+     And apply_status = #{applyStatus,jdbcType=INTEGER}
+    </if>
+    <if test="workgroupEmployeeId != null and workgroupEmployeeId > 0" >
+     And w.employee_id = #{workgroupEmployeeId,jdbcType=INTEGER}
+    </if>
+    <if test="workgroupName != null and workgroupName != ''" >
+     And w.workgroup_name like CONCAT('%',#{workgroupName,jdbcType=VARCHAR},'%' )
+    </if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TWorkgroupApplyQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />,w.workgroup_name,e.employee_name as apply_employee_name,we.employee_name as create_employee_name
+    from yun_cp_workgroup_apply t
+    left join yun_cp_workgroup w on t.workgroup_id = w.id
+    left join yun_cp_employee e on e.id = t.apply_employee_id
+    left join yun_cp_employee we on we.id = w.employee_id
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.id desc
+    limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TWorkgroupApplyQuery" resultType="java.lang.Integer">
+	select count(1) from yun_cp_workgroup_apply t
+	left join yun_cp_workgroup w on t.workgroup_id = w.id
+    left join yun_cp_employee e on e.id = t.apply_employee_id
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.authority.IPermissionDao" >
+  <resultMap id="BaseResultMap" type="TPermission" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="permission_name" property="permissionName" jdbcType="VARCHAR" />
+    <result column="permission_code" property="permissionCode" jdbcType="VARCHAR" />
+    <result column="permission_type" property="permissionType" jdbcType="TINYINT" />
+    <result column="permission_desc" property="permissionDesc" jdbcType="VARCHAR" />
+    <result column="permission_fid" property="permissionFid" jdbcType="INTEGER" />
+    <result column="permission_icon" property="permissionIcon" jdbcType="VARCHAR" />
+    <result column="permission_url" property="permissionUrl" jdbcType="CHAR" />
+    <result column="sort_no" property="sortNo" jdbcType="INTEGER" />
+    <result column="valid_status" property="validStatus" jdbcType="TINYINT" />
+    <result column="system_code" property="systemCode" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+ 
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, permission_name, permission_code, permission_type, permission_desc, permission_fid, 
+    permission_icon, permission_url, sort_no, valid_status, system_code, create_admin, create_time, 
+    update_admin, update_time
+  </sql>
+  
+  <!-- 根据主键查询对象 -->
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_permission
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TPermission" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_sys_permission (id, permission_name, permission_code, 
+      permission_type, permission_desc, permission_fid, 
+      permission_icon, permission_url, sort_no, 
+      valid_status, system_code, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{permissionName,jdbcType=VARCHAR}, #{permissionCode,jdbcType=VARCHAR}, 
+      #{permissionType,jdbcType=TINYINT}, #{permissionDesc,jdbcType=VARCHAR}, #{permissionFid,jdbcType=INTEGER}, 
+      #{permissionIcon,jdbcType=VARCHAR}, #{permissionUrl,jdbcType=VARCHAR}, #{sortNo,jdbcType=INTEGER}, 
+      #{validStatus,jdbcType=TINYINT}, #{systemCode,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 删除 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_sys_permission
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TPermission" >
+    update yun_sys_permission
+    <set >
+      <if test="permissionName != null" >
+        permission_name = #{permissionName,jdbcType=VARCHAR},
+      </if>
+      <if test="permissionCode != null" >
+        permission_code = #{permissionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="permissionType != null" >
+        permission_type = #{permissionType,jdbcType=TINYINT},
+      </if>
+      <if test="permissionDesc != null" >
+        permission_desc = #{permissionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="permissionFid != null" >
+        permission_fid = #{permissionFid,jdbcType=INTEGER},
+      </if>
+      <if test="permissionIcon != null" >
+        permission_icon = #{permissionIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="permissionUrl != null" >
+        permission_url = #{permissionUrl,jdbcType=CHAR},
+      </if>
+      <if test="sortNo != null" >
+        sort_no = #{sortNo,jdbcType=INTEGER},
+      </if>
+      <if test="validStatus != null" >
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="systemCode != null" >
+        system_code = #{systemCode,jdbcType=TINYINT},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      update_time = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and system_code = #{systemCode,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 条件语句 -->
+  <sql id="Page_Query_Condition">
+  	<if test="permissionName != null and permissionName !=''">  
+        AND t.permission_name like CONCAT('%', #{permissionName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="permissionFid != null and permissionFid >0">  
+        AND t.permission_fid = #{permission_fid} 
+    </if>
+    <if test="permissionUrl != null and permissionUrl !=''">  
+        AND t.permission_url like CONCAT('%', #{permissionUrl,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="permissionType != null and permissionUrl > 0">  
+        AND t.permission_type = #{permissionType}
+    </if>
+    <if test="validStatus != null">  
+        AND t.valid_status like CONCAT('%', #{validStatus,jdbcType=TINYINT},'%')
+    </if>
+    <if test="id != null and id > 0">  
+        AND t.id = #{id,jdbcType=INTEGER}
+    </if>
+  </sql>
+  
+  <!-- 条件查询列表 -->
+  <select id="selectByQuery" resultMap="BaseResultMap" parameterType="TPermissionQuery" >
+    select
+    <include refid="Base_Column_List" />
+    from yun_sys_permission t where t.system_code= #{systemCode,jdbcType=VARCHAR}
+    <include refid="Page_Query_Condition" />
+    order by t.permission_type ,t.sort_no asc limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询总数 -->
+  <select id="selectCountByQuery" parameterType="TPermissionQuery" resultType="java.lang.Integer" >
+    select count(1) from yun_sys_permission t where t.system_code= #{systemCode,jdbcType=VARCHAR}
+    <include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 根据adminId查询对应权限对象集合 -->
+  <select id="selectByAdminId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+	SELECT
+	<include refid="Base_Column_List" />
+	FROM yun_sys_permission ssp WHERE id IN (
+		SELECT DISTINCT permission_id FROM yun_sys_role_permission rp
+		LEFT JOIN yun_sys_admin_role ar ON rp.role_id = ar.role_id
+		LEFT JOIN yun_sys_role r ON rp.role_id = r.id
+		WHERE ar.admin_id = #{adminId,jdbcType=INTEGER} and r.valid_status = 1
+		) and valid_status = 1
+	order by ssp.sort_no asc
+  </select>
+</mapper>

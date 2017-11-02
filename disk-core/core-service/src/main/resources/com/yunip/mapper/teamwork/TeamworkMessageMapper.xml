@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.teamwork.ITeamworkMessageDao" >
+  <resultMap id="BaseResultMap" type="TTeamworkMessage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="zid" property="zid" jdbcType="INTEGER" />
+    <result column="msg_type" property="msgType" jdbcType="TINYINT" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="teamwork_id" property="teamworkId" jdbcType="INTEGER" />
+    <result column="file_id" property="fileId" jdbcType="INTEGER" />
+    <result column="folder_id" property="folderId" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="employee_portrait" property="employeePortrait" jdbcType="VARCHAR" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, zid, msg_type, title, content, employee_id, teamwork_id, file_id, folder_id, create_admin, create_time, 
+    update_admin, update_time
+  </sql>
+  
+  <!-- 查询数据列 -->
+  <sql id="Query_Column_List" >
+    t.id, t.zid, t.msg_type, t.title, t.content, t.employee_id, t.teamwork_id, t.file_id, t.folder_id, t.create_admin, t.create_time, 
+    t.update_admin, t.update_time, emp.employee_name, emp.employee_portrait, dept.dept_name
+  </sql>
+  
+  <!-- 查询单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_message
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询单条 -->
+  <select id="selectByFileId" resultMap="BaseResultMap" parameterType="TTeamworkMessage" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_tw_message
+    where file_id = #{fileId,jdbcType=INTEGER} and msg_type = #{msgType}
+    order by id desc
+  </select>
+
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_tw_message
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TTeamworkMessage" useGeneratedKeys="true"  keyProperty="id">
+    insert into yun_tw_message (id, zid, msg_type, 
+      title, content, employee_id, 
+      teamwork_id, file_id, folder_id, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{zid,jdbcType=INTEGER}, #{msgType,jdbcType=TINYINT}, 
+      #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{employeeId,jdbcType=INTEGER}, 
+      #{teamworkId,jdbcType=INTEGER}, #{fileId}, #{folderId}, #{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TTeamworkMessage" >
+    update yun_tw_message
+    <set >
+      <if test="zid != null" >
+        zid = #{zid,jdbcType=INTEGER},
+      </if>
+      <if test="msgType != null" >
+        msg_type = #{msgType,jdbcType=TINYINT},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="teamworkId != null" >
+        teamwork_id = #{teamworkId,jdbcType=INTEGER},
+      </if>
+      <if test="fileId != null" >
+        file_id = #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="folderId != null" >
+        folder_id = #{folderId,jdbcType=INTEGER},
+      </if>
+      <if test="createAdmin != null" >
+        create_admin = #{createAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  	  <if test="zid != null and zid > 0" >
+        AND zid = #{zid,jdbcType=INTEGER}
+      </if>
+  	  <if test="msgType != null and msgType > 0" >
+        AND msg_type = #{msgType,jdbcType=INTEGER}
+      </if>
+      <if test="employeeId != null and employeeId > 0" >
+        AND employee_id = #{employeeId,jdbcType=INTEGER}
+      </if>
+      <if test="teamworkId != null and teamworkId > 0" >
+        AND teamwork_id = #{teamworkId,jdbcType=INTEGER}
+      </if>
+      <if test="startDate != null and startDate != ''" >
+         <![CDATA[AND create_time >= #{startDate,jdbcType=VARCHAR}]]>
+      </if>
+       <if test="endDate != null and endDate != ''" >
+         <![CDATA[AND create_time <= #{endDate,jdbcType=VARCHAR}]]>
+      </if>
+      <if test="operationDate != null and operationDate != ''" >
+         <![CDATA[AND create_time < #{operationDate,jdbcType=VARCHAR}]]>
+      </if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TTeamworkMessageQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />
+    from yun_tw_message t 
+    left join yun_cp_employee emp on t.employee_id = emp.id
+    where zid in 
+    (select tmp.zid from 
+    	(select DISTINCT zid from yun_tw_message 
+    		where 1 = 1
+    		<include refid="Page_Query_Condition" />
+    		order by id desc
+    		limit #{pageStart},#{pageSize}) 
+    	as tmp)
+    	order by t.id desc
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TTeamworkMessageQuery" resultType="java.lang.Integer">
+	select count(1) from yun_tw_message t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectAjaxByQuery" parameterType="TTeamworkMessageQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Query_Column_List" />
+    from yun_tw_message t 
+    left join yun_cp_employee emp on t.employee_id = emp.id
+    left join yun_cp_department dept on dept.id = emp.dept_id
+    where zid in 
+    (select tmp.zid from 
+    	(select DISTINCT zid from yun_tw_message 
+    		where 1 = 1
+    		<include refid="Page_Query_Condition" />
+    		order by id desc
+    		limit #{pageStart},#{pageSize}) 
+    	as tmp)
+    	order by t.id desc
+  </select>
+  
+  <select id="selectObjById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  	select
+  	<include refid="Query_Column_List" />
+    from yun_tw_message t 
+    left join yun_cp_employee emp on t.employee_id = emp.id
+    left join yun_cp_department dept on dept.id = emp.dept_id
+    where zid = (select zid from yun_tw_message where id = #{id})
+    order by t.id desc
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectAjaxCountByQuery" parameterType="TTeamworkMessageQuery" resultType="java.lang.Integer">
+    select count(1) from 
+	   	(select DISTINCT zid from yun_tw_message 
+	   		where 1 = 1
+	   		<include refid="Page_Query_Condition" />
+	   		order by id desc
+	   	) as tmp
+  </select>
+</mapper>

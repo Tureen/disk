@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.ISignDao" >
+  <resultMap id="BaseResultMap" type="TSign" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="sign_name" property="signName" jdbcType="VARCHAR" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="file_sign_number" property="fileSignNumber" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, sign_name, create_admin, employee_id, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 公共数据列 -->
+  <sql id="Sign_Column_List" >
+    sign.id, sign.sign_name, sign.create_admin, sign.employee_id, sign.create_time, sign.update_admin, sign.update_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_sign
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找，根据员工id -->
+  <select id="selectByEmployeeId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_sign
+    where employee_id = #{employeeId,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查找，根据文件id -->
+  <select id="selectByFileId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    SELECT
+	<include refid="Sign_Column_List" />
+	FROM yun_dk_file_sign fs
+	LEFT JOIN yun_dk_sign sign ON fs.sign_id = sign.id
+	where fs.file_id = #{fileId}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_sign
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TSign" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_dk_sign (id, sign_name, create_admin, 
+      employee_id, create_time, update_admin, 
+      update_time)
+    values (#{id,jdbcType=INTEGER}, #{signName,jdbcType=VARCHAR}, #{createAdmin,jdbcType=VARCHAR}, 
+      #{employeeId,jdbcType=INTEGER}, now(), #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TSign" >
+    update yun_dk_sign
+    <set >
+      <if test="signName != null" >
+        sign_name = #{signName,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+      update_time = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+  	<if test="signName != null and signName != ''" >
+     And sign_name like CONCAT('%',#{signName},'%')
+    </if>
+    <if test="employeeId != null and employeeId > 0" >
+     And employee_id = #{employeeId,jdbcType=INTEGER}
+    </if>
+    <if test="startDate != null and startDate != ''" >
+     <![CDATA[ and create_time >= #{startDate}]]>
+    </if>
+    <if test="endDate != null and endDate != ''" >
+     <![CDATA[ and create_time < #{endDate}]]>
+    </if>
+  </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TSignQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Sign_Column_List" />
+    ,(select count(1) from yun_dk_file_sign fs where sign.id = fs.sign_id ) as file_sign_number
+    from yun_dk_sign sign
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by sign.create_time desc
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TSignQuery" resultType="java.lang.Integer">
+	select count(1) from yun_dk_sign t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

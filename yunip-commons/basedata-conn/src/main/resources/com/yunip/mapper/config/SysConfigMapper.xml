@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.config.ISysConfigDao" >
+  <resultMap id="BaseResultMap" type="TSysConfig" >
+    <id column="config_code" property="configCode" jdbcType="VARCHAR" />
+    <result column="config_key" property="configKey" jdbcType="VARCHAR" />
+    <result column="config_value" property="configValue" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    config_code, config_key, config_value
+  </sql>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TSysConfig" >
+    insert into yun_syc_sysconfig (config_code, config_key, config_value)
+    values (#{configCode,jdbcType=VARCHAR}, #{configKey,jdbcType=VARCHAR}, #{configValue,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TSysConfig" >
+    update yun_syc_sysconfig
+    <set >
+      <if test="configValue != null" >
+        config_value = #{configValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where config_code = #{configCode,jdbcType=VARCHAR}
+      and config_key = #{configKey,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 查询条件sql -->
+  <sql id="Page_Query_Condition">
+		<if test="configCode != null and configCode != ''">
+			AND t.config_code = #{configCode}
+		</if>
+		<if test="configKey != null and configKey != ''">
+			AND t.config_key = #{configKey}
+		</if>
+		<if test="configValue != null and configValue !=''">  
+       		AND config_value = #{configValue}
+    	</if>
+   </sql>
+  
+  <!-- 条件查询，列表 -->
+  <select id="selectByQuery" parameterType="TSysConfigQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_syc_sysconfig t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+  </select>
+  
+  <!-- 条件查询，总数 -->
+  <select id="selectCountByQuery" parameterType="TSysConfigQuery" resultType="java.lang.Integer">
+	select count(1) from yun_syc_sysconfig t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

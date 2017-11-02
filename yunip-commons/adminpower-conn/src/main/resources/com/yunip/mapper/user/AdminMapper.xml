@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunip.mapper.user.IAdminDao">
+  
+ <resultMap id="BaseResultMap" type="TAdmin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="account_pwd" jdbcType="VARCHAR" property="accountPwd" />
+    <result column="valid_status" jdbcType="TINYINT" property="validStatus" />
+    <result column="token" property="token" jdbcType="VARCHAR" />
+    <result column="pc_token" property="pcToken" jdbcType="VARCHAR" />
+    <result column="device_code" property="deviceCode" jdbcType="VARCHAR"/>
+    <result column="ad_name" property="adName" jdbcType="VARCHAR"/>
+    <result column="is_admin" property="isAdmin" jdbcType="INTEGER"/>
+    <result column="login_times" property="loginTimes" jdbcType="TINYINT"/>
+    <result column="last_time" property="lastTime" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List">
+    id, mobile, account_pwd, valid_status, token, device_code, ad_name, is_admin, login_times, last_time,pc_token
+  </sql>
+ 
+  <!-- 根据主键查询对象 -->
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_admin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除 -->
+  <delete id="delById" parameterType="TAdmin">
+    delete from yun_sys_admin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+ 
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TAdmin" useGeneratedKeys="true" keyProperty="id">
+    insert into yun_sys_admin (id, mobile, account_pwd, 
+      valid_status, token, device_code, ad_name, is_admin, pc_token)
+    values (#{id,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{accountPwd,jdbcType=VARCHAR}, 
+      #{validStatus,jdbcType=TINYINT},  #{token,jdbcType=VARCHAR},  #{deviceCode,jdbcType=VARCHAR}
+      ,  #{adName,jdbcType=VARCHAR}, #{isAdmin,jdbcType=INTEGER}, #{pcToken,jdbcType=VARCHAR})
+  </insert>
+ 
+  <!-- 修改 -->
+  <update id="update" parameterType="TAdmin">
+    update yun_sys_admin
+    <set>
+      <if test="mobile != null and mobile != ''">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPwd != null and accountPwd != ''">
+        account_pwd = #{accountPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="validStatus != null">
+        valid_status = #{validStatus,jdbcType=TINYINT},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=TINYINT},
+      </if>
+      <if test="pcToken != null">
+        pc_token = #{pcToken,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceCode != null">
+        device_code = #{deviceCode,jdbcType=TINYINT},
+      </if>
+      <if test="adName != null">
+        ad_name = #{adName,jdbcType=VARCHAR},
+      </if>
+      <if test="isAdmin != null">
+        is_admin = #{isAdmin,jdbcType=INTEGER},
+      </if>
+      <if test="loginTimes != null">
+        login_times = #{loginTimes,jdbcType=TINYINT},
+      </if>
+      <if test="lastTime != null">
+        last_time = #{lastTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 查询条件sql -->
+   <sql id="Page_Query_Condition">
+		<if test="id != null and id > 0">
+			AND t.id = #{id}
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND t.mobile = #{mobile,jdbcType=VARCHAR}
+		</if>
+		<if test="password != null and password != ''">
+			AND t.account_pwd = #{password,jdbcType=VARCHAR}
+		</if>
+		<if test="token != null and token != ''">  
+       		AND token = #{token,jdbcType=VARCHAR}
+    	</if>
+    	<if test="pcToken != null and pcToken != ''">  
+       		AND pc_token = #{pcToken,jdbcType=VARCHAR}
+    	</if>
+		<if test="validStatus != null">  
+       		AND valid_status = #{validStatus}
+    	</if>
+    	<if test="adName != null and adName != ''">  
+       		AND ad_name = #{adName,jdbcType=VARCHAR}
+    	</if>
+    	<if test="isAdmin != null">  
+       		AND is_admin = #{isAdmin,jdbcType=INTEGER}
+    	</if>
+   </sql>
+  
+  <!-- 根据条件查询对象 -->
+  <select id="selectByQuery" parameterType="TAdminQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yun_sys_admin t
+    where 1 = 1
+    <include refid="Page_Query_Condition" />
+    order by t.id asc limit #{pageStart},#{pageSize}
+  </select>
+  
+  <!-- 条件查询总数 -->
+  <select id="selectCountByQuery" parameterType="TAdminQuery" resultType="java.lang.Integer">
+	select count(1) from yun_sys_admin t
+	where 1 = 1
+	<include refid="Page_Query_Condition" />
+  </select>
+</mapper>

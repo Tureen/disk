@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunip.mapper.disk.IEmployeeDiskDao" >
+  <resultMap id="BaseResultMap" type="TEmployeeDisk" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="disk_size" property="diskSize" jdbcType="INTEGER" />
+    <result column="folder_number" property="folderNumber" jdbcType="INTEGER" />
+    <result column="file_numer" property="fileNumer" jdbcType="INTEGER" />
+    <result column="receive_folder_number" property="receiveFolderNumber" jdbcType="INTEGER" />
+    <result column="receive_file_number" property="receiveFileNumber" jdbcType="INTEGER" />
+    <result column="sign_number" property="signNumber" jdbcType="INTEGER" />
+    <result column="take_file_number" property="takeFileNumber" jdbcType="INTEGER" />
+    <result column="create_admin" property="createAdmin" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_admin" property="updateAdmin" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <!-- 公共数据列 -->
+  <sql id="Base_Column_List" >
+    id, disk_size, folder_number, file_numer, receive_folder_number, receive_file_number, 
+    sign_number, take_file_number, create_admin, create_time, update_admin, update_time
+  </sql>
+  
+  <!-- 查找单条 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yun_dk_employee_disk
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 删除单条 -->
+  <delete id="delById" parameterType="java.lang.Integer" >
+    delete from yun_dk_employee_disk
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 插入数据 -->
+  <insert id="insert" parameterType="TEmployeeDisk" >
+    insert into yun_dk_employee_disk (id, disk_size, folder_number, 
+      file_numer, receive_folder_number, receive_file_number, 
+      sign_number, take_file_number, create_admin, create_time, 
+      update_admin, update_time)
+    values (#{id,jdbcType=INTEGER}, #{diskSize,jdbcType=INTEGER}, #{folderNumber,jdbcType=INTEGER}, 
+      #{fileNumer,jdbcType=INTEGER}, #{receiveFolderNumber,jdbcType=INTEGER}, #{receiveFileNumber,jdbcType=INTEGER}, 
+      #{signNumber,jdbcType=INTEGER}, #{takeFileNumber,jdbcType=INTEGER} ,#{createAdmin,jdbcType=VARCHAR}, now(), 
+      #{updateAdmin,jdbcType=VARCHAR}, now())
+  </insert>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="TEmployeeDisk" >
+    update yun_dk_employee_disk
+    <set >
+      <if test="diskSize != null" >
+        disk_size = #{diskSize,jdbcType=INTEGER},
+      </if>
+      <if test="folderNumber != null" >
+        folder_number = #{folderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="fileNumer != null" >
+        file_numer = #{fileNumer,jdbcType=INTEGER},
+      </if>
+      <if test="receiveFolderNumber != null" >
+        receive_folder_number = #{receiveFolderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="receiveFileNumber != null" >
+        receive_file_number = #{receiveFileNumber,jdbcType=INTEGER},
+      </if>
+      <if test="signNumber != null" >
+        sign_number = #{signNumber,jdbcType=INTEGER},
+      </if>
+      <if test="takeFileNumber != null" >
+        take_file_number = #{takeFileNumber,jdbcType=INTEGER},
+      </if>
+      <if test="updateAdmin != null" >
+        update_admin = #{updateAdmin,jdbcType=VARCHAR},
+      </if>
+    update_time = now(),
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

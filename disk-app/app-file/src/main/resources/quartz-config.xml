@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  	   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  	   http://www.springframework.org/schema/mvc
+  	   http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	<context:annotation-config />
+
+	<!-- 每天凌晨00:30清理过期的缓存目录及文件 -->
+	<bean id="clearExpireTempDirJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="TaskEntry" />
+		<property name="targetMethod" value="clearExpireTempDir" />
+	</bean>
+	<bean id="clearExpireTempDirJobTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="clearExpireTempDirJobTask"></property>
+		<property name="cronExpression" value="00 30 00 * * ?"></property>
+	</bean>
+	
+	<!-- 每天凌晨00:45将所有待加密的文件加入加密队列 -->
+	<bean id="waitForEncryptFileJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="TaskEntry" />
+		<property name="targetMethod" value="waitForEncryptFile" />
+	</bean>
+	<bean id="waitForEncryptFileJobTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="waitForEncryptFileJobTask"></property>
+ 		<property name="cronExpression" value="00 45 00 * * ?"></property>
+	</bean>
+	
+	<!-- 每天凌晨01:00清理过期的预览缓存目录及文件 -->
+	<bean id="clearExpirePreviewDirJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="TaskEntry" />
+		<property name="targetMethod" value="clearExpirePreviewDir" />
+	</bean>
+	<bean id="clearExpirePreviewDirJobTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="clearExpirePreviewDirJobTask"></property>
+		<property name="cronExpression" value="00 00 01 * * ?"></property>
+	</bean>
+	
+	<!-- 每隔5分钟查询剩余磁盘添加memcache -->
+	<bean id="addMemcacheDiskspaceJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="TaskEntry" />
+		<property name="targetMethod" value="addMemcacheDiskspace" />
+	</bean>
+	<bean id="addMemcacheDiskspaceJobTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="addMemcacheDiskspaceJobTask"></property>
+		<property name="cronExpression" value="0 0/1 * * * ?"></property>
+	</bean>
+	
+	<bean id="SpringJobSchedulerFactoryBean"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="clearExpireTempDirJobTime" />
+				<ref bean="clearExpirePreviewDirJobTime" />
+				<ref bean="waitForEncryptFileJobTime" />
+				<ref bean="addMemcacheDiskspaceJobTime" />
+			</list>
+		</property>
+	</bean>
+</beans>
